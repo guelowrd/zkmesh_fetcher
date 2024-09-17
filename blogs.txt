@@ -1,2 +1,3 @@
 Gevulot|blog.gevulot.com|Substack
 Ingonyama|medium.com/@ingonyama|Medium
+Succinct|https://blog.succinct.xyz/rss/|RSS

@@ -31,7 +31,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             },
             "Medium" => {
                 let feed_url = format!("https://medium.com/feed/{}", blog.domain.trim_start_matches("medium.com/"));
-                fetch_medium_blog_articles(&feed_url, &since_date, &blog.name)?
+                fetch_rss_blog_articles(&feed_url, &since_date, &blog.name)?
+            },
+            "RSS" => {
+                fetch_rss_blog_articles(&blog.domain, &since_date, &blog.name)?
             },
             _ => continue,
         };
@@ -90,7 +93,7 @@ fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name
     Ok(articles)
 }
 
-fn fetch_medium_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
+fn fetch_rss_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
     let client = Client::new();
     let response = client.get(feed_url).send()?;
     let content = response.bytes()?;
@@ -100,7 +103,7 @@ fn fetch_medium_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name:
 
     for item in channel.items() {
         if let (Some(title), Some(link), Some(pub_date)) = (item.title(), item.link(), item.pub_date()) {
-            let date = NaiveDate::parse_from_str(pub_date, "%a, %d %b %Y %H:%M:%S %Z")?;
+            let date = parse_rss_date(pub_date)?;
             if date >= *since_date {
                 articles.push(BlogArticle {
                     title: title.to_string(),
@@ -113,4 +116,20 @@ fn fetch_medium_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name:
     }
 
     Ok(articles)
+}
+
+fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
+    let formats = [
+        "%a, %d %b %Y %H:%M:%S %Z",
+        "%Y-%m-%dT%H:%M:%S%:z",
+        "%Y-%m-%d",
+    ];
+
+    for format in &formats {
+        if let Ok(date) = NaiveDate::parse_from_str(date_str, format) {
+            return Ok(date);
+        }
+    }
+
+    Err(format!("Unable to parse date: {}", date_str).into())
 }
