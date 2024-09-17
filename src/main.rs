@@ -4,10 +4,12 @@ use serde_json::Value;
 use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use rss::Channel;
 
 struct BlogInfo {
     name: String,
     domain: String,
+    platform: String,
 }
 
 struct BlogArticle {
@@ -22,11 +24,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     let since_date = NaiveDate::parse_from_str("2024-09-01", "%Y-%m-%d")?;
 
     for blog in blogs {
-        let api_url = format!("https://{}/api/v1/posts/?limit=50", blog.domain);
-        let articles = fetch_substack_blog_articles(&api_url, &since_date, &blog.name, &blog.domain)?;
+        let articles = match blog.platform.as_str() {
+            "Substack" => {
+                let api_url = format!("https://{}/api/v1/posts/?limit=50", blog.domain);
+                fetch_substack_blog_articles(&api_url, &since_date, &blog.name, &blog.domain)?
+            },
+            "Medium" => {
+                let feed_url = format!("https://medium.com/feed/{}", blog.domain.trim_start_matches("medium.com/"));
+                fetch_medium_blog_articles(&feed_url, &since_date, &blog.name)?
+            },
+            _ => continue,
+        };
 
         for article in articles {
-            println!("[{}]({}) ({}) | {}", article.title, article.url, article.date, article.blog_name);
+            println!("[{}]({}) | {} ({})", article.title, article.url, article.blog_name, article.date);
         }
     }
 
@@ -41,10 +52,11 @@ fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Error>>
         .filter_map(Result::ok)
         .filter_map(|line| {
             let parts: Vec<&str> = line.split('|').collect();
-            if parts.len() == 2 {
+            if parts.len() == 3 {
                 Some(BlogInfo {
                     name: parts[0].trim().to_string(),
                     domain: parts[1].trim().to_string(),
+                    platform: parts[2].trim().to_string(),
                 })
             } else {
                 None
@@ -71,6 +83,31 @@ fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name
 
             if date >= *since_date {
                 articles.push(BlogArticle { title, url, date, blog_name: blog_name.to_string() });
+            }
+        }
+    }
+
+    Ok(articles)
+}
+
+fn fetch_medium_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
+    let client = Client::new();
+    let response = client.get(feed_url).send()?;
+    let content = response.bytes()?;
+    let channel = Channel::read_from(&content[..])?;
+
+    let mut articles = Vec::new();
+
+    for item in channel.items() {
+        if let (Some(title), Some(link), Some(pub_date)) = (item.title(), item.link(), item.pub_date()) {
+            let date = NaiveDate::parse_from_str(pub_date, "%a, %d %b %Y %H:%M:%S %Z")?;
+            if date >= *since_date {
+                articles.push(BlogArticle {
+                    title: title.to_string(),
+                    url: link.to_string(),
+                    date,
+                    blog_name: blog_name.to_string(),
+                });
             }
         }
     }
