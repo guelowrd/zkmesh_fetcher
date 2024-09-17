@@ -1,0 +1,2 @@
+TestBlog|https://test.com|Substack
+AnotherBlog|https://another.com|RSS

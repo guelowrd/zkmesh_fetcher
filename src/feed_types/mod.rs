@@ -3,7 +3,7 @@ mod rss;
 mod atom;
 
 pub use substack::SubstackFetcher;
-pub use rss::RSSFetcher;
+pub use rss::RssFetcher;
 pub use atom::AtomFetcher;
 
 use chrono::NaiveDate;

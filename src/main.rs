@@ -8,7 +8,7 @@ use std::io::{BufRead, BufReader};
 mod feed_types;
 mod errors;
 
-use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RSSFetcher, AtomFetcher};
+use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher};
 use errors::AppError;
 
 #[derive(Debug)]
@@ -33,7 +33,7 @@ fn main() -> Result<(), AppError> {
     for blog in blogs {
         let fetcher: Box<dyn ArticleFetcher> = match blog.feed_type {
             FeedType::Substack => Box::new(SubstackFetcher),
-            FeedType::RSS => Box::new(RSSFetcher),
+            FeedType::RSS => Box::new(RssFetcher),
             FeedType::Atom => Box::new(AtomFetcher),
         };
 

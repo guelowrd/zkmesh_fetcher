@@ -5,9 +5,9 @@ use chrono::NaiveDate;
 use reqwest::blocking::Client;
 use rss::Channel;
 
-pub struct RSSFetcher;
+pub struct RssFetcher;
 
-impl ArticleFetcher for RSSFetcher {
+impl ArticleFetcher for RssFetcher {
     fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
         let client = Client::new();
         let response = client.get(feed_url).send()?;
