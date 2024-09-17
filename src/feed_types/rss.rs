@@ -1,5 +1,6 @@
 use super::ArticleFetcher;
 use crate::BlogArticle;
+use crate::errors::AppError;
 use chrono::NaiveDate;
 use reqwest::blocking::Client;
 use rss::Channel;
@@ -7,7 +8,7 @@ use rss::Channel;
 pub struct RSSFetcher;
 
 impl ArticleFetcher for RSSFetcher {
-    fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn std::error::Error>> {
+    fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
         let client = Client::new();
         let response = client.get(feed_url).send()?;
         let content = response.bytes()?;

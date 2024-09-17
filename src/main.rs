@@ -2,12 +2,14 @@
 mod tests;
 
 use chrono::NaiveDate;
-use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 mod feed_types;
+mod errors;
+
 use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RSSFetcher, AtomFetcher};
+use errors::AppError;
 
 #[derive(Debug)]
 pub struct BlogInfo {
@@ -24,7 +26,7 @@ pub struct BlogArticle {
     pub blog_name: String,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), AppError> {
     let blogs = read_blogs_from_file("blogs.txt")?;
     let since_date = NaiveDate::parse_from_str("2024-09-01", "%Y-%m-%d")?;
 
@@ -45,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Error>> {
+pub fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, AppError> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
     let blogs: Vec<BlogInfo> = reader
@@ -67,7 +69,7 @@ pub fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Err
     Ok(blogs)
 }
 
-pub fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
+pub fn parse_rss_date(date_str: &str) -> Result<NaiveDate, AppError> {
     let formats = [
         "%a, %d %b %Y %H:%M:%S %Z",
         "%a, %d %b %Y %H:%M:%S GMT",
@@ -82,5 +84,5 @@ pub fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
         }
     }
 
-    Err(format!("Unable to parse date: {}", date_str).into())
+    Err(AppError::ParseError(format!("Unable to parse date: {}", date_str)))
 }
