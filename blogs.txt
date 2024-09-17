@@ -1,4 +1,6 @@
-Gevulot|blog.gevulot.com|Substack
-Ingonyama|medium.com/@ingonyama|Medium
+Gevulot|https://blog.gevulot.com/|Substack
+Ingonyama|https://medium.com/@ingonyama|Medium
 Succinct|https://blog.succinct.xyz/rss/|RSS
 Vitalik Buterin|https://vitalik.eth.limo/feed.xml|RSS
+Zellic|https://www.zellic.io/blog/rss.xml|RSS
+ZK Hack|https://zkhack.dev/feed/|RSS

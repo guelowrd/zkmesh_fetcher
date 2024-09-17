@@ -31,11 +31,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     for blog in blogs {
         let articles = match blog.platform.as_str() {
             "Substack" => {
-                let api_url = format!("https://{}/api/v1/posts/?limit=50", blog.domain);
+                let api_url = format!("{}/api/v1/posts/?limit=50", blog.domain);
                 fetch_substack_blog_articles(&api_url, &since_date, &blog.name, &blog.domain)?
             },
             "Medium" => {
-                let feed_url = format!("https://medium.com/feed/{}", blog.domain.trim_start_matches("medium.com/"));
+                let feed_url = format!("https://medium.com/feed/{}", blog.domain.trim_start_matches("https://medium.com/"));
                 fetch_rss_blog_articles(&feed_url, &since_date, &blog.name)?
             },
             "RSS" => {
@@ -78,8 +78,6 @@ pub fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_
     let client = Client::new();
     let response = client.get(api_url).send()?;
     let json: Value = response.json()?;
-    
-    println!("Saved Substack API response to substack_response.json");
 
     let mut articles = Vec::new();
 
@@ -87,7 +85,7 @@ pub fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_
         for post in posts {
             let title = post["title"].as_str().unwrap_or_default().to_string();
             let slug = post["slug"].as_str().unwrap_or_default();
-            let url = format!("https://{}/p/{}", blog_domain, slug);
+            let url = format!("{}/p/{}", blog_domain, slug);
             let date_str = post["post_date"].as_str().unwrap_or_default();
             let date = NaiveDate::parse_from_str(&date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
             if date >= *since_date {

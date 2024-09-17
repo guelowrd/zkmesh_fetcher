@@ -4,14 +4,14 @@ use crate::{read_blogs_from_file, fetch_substack_blog_articles, fetch_rss_blog_a
 
 #[test]
 fn test_read_blogs_from_file() {
-    let content = "TestBlog|test.com|Substack\nAnotherBlog|another.com|RSS";
+    let content = "TestBlog|https://test.com|Substack\nAnotherBlog|https://another.com|RSS";
     std::fs::write("test_blogs.txt", content).unwrap();
     
     let blogs = read_blogs_from_file("test_blogs.txt").unwrap();
     
     assert_eq!(blogs.len(), 2);
     assert_eq!(blogs[0].name, "TestBlog");
-    assert_eq!(blogs[0].domain, "test.com");
+    assert_eq!(blogs[0].domain, "https://test.com");
     assert_eq!(blogs[0].platform, "Substack");
     
     std::fs::remove_file("test_blogs.txt").unwrap();
@@ -38,7 +38,7 @@ fn test_fetch_substack_blog_articles() {
     let mock_url = mockito::server_url();
     let api_url = format!("{}/api/v1/posts?limit=50", mock_url);
 
-    let articles = fetch_substack_blog_articles(&api_url, &since_date, "TestBlog", "test.com").unwrap();
+    let articles = fetch_substack_blog_articles(&api_url, &since_date, "TestBlog", "https://test.com").unwrap();
 
     assert_eq!(articles.len(), 1);
     assert_eq!(articles[0].title, "Test Article");
