@@ -1,2 +1,3 @@
 /target
-*_api_output.json
+*_output.json
+*_output.xml
