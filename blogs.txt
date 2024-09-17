@@ -4,3 +4,4 @@ Succinct|https://blog.succinct.xyz/rss/|RSS
 Vitalik Buterin|https://vitalik.eth.limo/feed.xml|RSS
 Zellic|https://www.zellic.io/blog/rss.xml|RSS
 ZK Hack|https://zkhack.dev/feed/|RSS
+zkSync|https://zksync.mirror.xyz/feed/atom|Atom

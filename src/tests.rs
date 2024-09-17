@@ -19,6 +19,7 @@ fn test_read_blogs_from_file() {
 
 #[test]
 fn test_fetch_substack_blog_articles() {
+    // Define the mock JSON response
     let mock_body = r#"[
         {
             "id": 1,
@@ -28,18 +29,22 @@ fn test_fetch_substack_blog_articles() {
         }
     ]"#;
 
+    // Set up the mock server
     let _m = mock("GET", "/api/v1/posts?limit=50")
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body(mock_body)
         .create();
 
+    // Set a date for filtering articles
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
+
+    // Call the function under test with the mock server URL
     let mock_url = mockito::server_url();
     let api_url = format!("{}/api/v1/posts?limit=50", mock_url);
-
     let articles = fetch_substack_blog_articles(&api_url, &since_date, "TestBlog", "https://test.com").unwrap();
 
+    // Assert the results
     assert_eq!(articles.len(), 1);
     assert_eq!(articles[0].title, "Test Article");
     assert_eq!(articles[0].url, "https://test.com/p/test-article");

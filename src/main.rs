@@ -8,6 +8,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use rss::Channel;
+use atom_syndication;
 
 #[derive(Debug)]
 pub struct BlogInfo {
@@ -40,6 +41,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             },
             "RSS" => {
                 fetch_rss_blog_articles(&blog.domain, &since_date, &blog.name)?
+            },
+            "Atom" => {
+                fetch_atom_blog_articles(&blog.domain, &since_date, &blog.name)?
             },
             _ => continue,
         };
@@ -122,11 +126,39 @@ pub fn fetch_rss_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name
     Ok(articles)
 }
 
+pub fn fetch_atom_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
+    let client = Client::new();
+    let response = client.get(feed_url).send()?;
+    let content = response.bytes()?;
+    let feed = atom_syndication::Feed::read_from(&content[..])?;
+
+    let mut articles = Vec::new();
+
+    for entry in feed.entries() {
+        let title = entry.title().to_string();
+        if let Some(link) = entry.links.first() {
+            let date = parse_rss_date(&entry.updated.to_rfc2822())?;
+            if date >= *since_date {
+                articles.push(BlogArticle {
+                    title,
+                    url: link.href.clone(),
+                    date,
+                    blog_name: blog_name.to_string(),
+                });
+            }
+        }
+    }
+
+    Ok(articles)
+}
+
 pub fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
     let formats = [
         "%a, %d %b %Y %H:%M:%S %Z",
+        "%a, %d %b %Y %H:%M:%S GMT",
         "%Y-%m-%dT%H:%M:%S%:z",
         "%Y-%m-%d",
+        "%Y-%m-%dT%H:%M:%SZ",  
     ];
 
     for format in &formats {
