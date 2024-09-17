@@ -1,22 +1,27 @@
+#[cfg(test)]
+mod tests;
+
 use chrono::NaiveDate;
 use reqwest::blocking::Client;
 use serde_json::Value;
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Write};
 use rss::Channel;
 
-struct BlogInfo {
-    name: String,
-    domain: String,
-    platform: String,
+#[derive(Debug)]
+pub struct BlogInfo {
+    pub name: String,
+    pub domain: String,
+    pub platform: String,
 }
 
-struct BlogArticle {
-    title: String,
-    url: String,
-    date: NaiveDate,
-    blog_name: String,
+#[derive(Debug)]
+pub struct BlogArticle {
+    pub title: String,
+    pub url: String,
+    pub date: NaiveDate,
+    pub blog_name: String,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -47,7 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Error>> {
+pub fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Error>> {
     let file = File::open(filename)?;
     let reader = BufReader::new(file);
     let blogs: Vec<BlogInfo> = reader
@@ -69,10 +74,17 @@ fn read_blogs_from_file(filename: &str) -> Result<Vec<BlogInfo>, Box<dyn Error>>
     Ok(blogs)
 }
 
-fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name: &str, blog_domain: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
+pub fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name: &str, blog_domain: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
     let client = Client::new();
     let response = client.get(api_url).send()?;
     let json: Value = response.json()?;
+    
+    // Save the JSON to a file
+    let json_string = serde_json::to_string_pretty(&json)?;
+    let mut file = File::create("substack_response.json")?;
+    file.write_all(json_string.as_bytes())?;
+    
+    println!("Saved Substack API response to substack_response.json");
 
     let mut articles = Vec::new();
 
@@ -83,7 +95,7 @@ fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name
             let url = format!("https://{}/p/{}", blog_domain, slug);
             let date_str = post["post_date"].as_str().unwrap_or_default();
             let date = NaiveDate::parse_from_str(&date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
-
+            // println!("title: {}, slug: {}, url: {}, date: {}", title, slug, url, date);
             if date >= *since_date {
                 articles.push(BlogArticle { title, url, date, blog_name: blog_name.to_string() });
             }
@@ -93,7 +105,7 @@ fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_name
     Ok(articles)
 }
 
-fn fetch_rss_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
+pub fn fetch_rss_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, Box<dyn Error>> {
     let client = Client::new();
     let response = client.get(feed_url).send()?;
     let content = response.bytes()?;
@@ -118,7 +130,7 @@ fn fetch_rss_blog_articles(feed_url: &str, since_date: &NaiveDate, blog_name: &s
     Ok(articles)
 }
 
-fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
+pub fn parse_rss_date(date_str: &str) -> Result<NaiveDate, Box<dyn Error>> {
     let formats = [
         "%a, %d %b %Y %H:%M:%S %Z",
         "%Y-%m-%dT%H:%M:%S%:z",
