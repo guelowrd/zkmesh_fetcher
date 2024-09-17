@@ -6,7 +6,7 @@ use reqwest::blocking::Client;
 use serde_json::Value;
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader};
 use rss::Channel;
 
 #[derive(Debug)]
@@ -79,11 +79,6 @@ pub fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_
     let response = client.get(api_url).send()?;
     let json: Value = response.json()?;
     
-    // Save the JSON to a file
-    let json_string = serde_json::to_string_pretty(&json)?;
-    let mut file = File::create("substack_response.json")?;
-    file.write_all(json_string.as_bytes())?;
-    
     println!("Saved Substack API response to substack_response.json");
 
     let mut articles = Vec::new();
@@ -95,7 +90,6 @@ pub fn fetch_substack_blog_articles(api_url: &str, since_date: &NaiveDate, blog_
             let url = format!("https://{}/p/{}", blog_domain, slug);
             let date_str = post["post_date"].as_str().unwrap_or_default();
             let date = NaiveDate::parse_from_str(&date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
-            // println!("title: {}, slug: {}, url: {}, date: {}", title, slug, url, date);
             if date >= *since_date {
                 articles.push(BlogArticle { title, url, date, blog_name: blog_name.to_string() });
             }

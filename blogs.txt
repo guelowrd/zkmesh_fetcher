@@ -1,3 +1,4 @@
 Gevulot|blog.gevulot.com|Substack
 Ingonyama|medium.com/@ingonyama|Medium
 Succinct|https://blog.succinct.xyz/rss/|RSS
+Vitalik Buterin|https://vitalik.eth.limo/feed.xml|RSS
