@@ -1,6 +1,12 @@
+// Remove this line
+// mod feed_types;
+
+// Update the import to use the crate-level imports
+use crate::feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RSSFetcher};
+
 use chrono::NaiveDate;
 use mockito::mock;
-use crate::{read_blogs_from_file, fetch_substack_blog_articles, fetch_rss_blog_articles, parse_rss_date};
+use crate::{read_blogs_from_file, parse_rss_date};
 
 #[test]
 fn test_read_blogs_from_file() {
@@ -12,7 +18,7 @@ fn test_read_blogs_from_file() {
     assert_eq!(blogs.len(), 2);
     assert_eq!(blogs[0].name, "TestBlog");
     assert_eq!(blogs[0].domain, "https://test.com");
-    assert_eq!(blogs[0].platform, "Substack");
+    assert_eq!(blogs[0].feed_type, FeedType::Substack);
     
     std::fs::remove_file("test_blogs.txt").unwrap();
 }
@@ -30,7 +36,7 @@ fn test_fetch_substack_blog_articles() {
     ]"#;
 
     // Set up the mock server
-    let _m = mock("GET", "/api/v1/posts?limit=50")
+    let _m = mock("GET", "/")
         .with_status(200)
         .with_header("content-type", "application/json")
         .with_body(mock_body)
@@ -39,15 +45,17 @@ fn test_fetch_substack_blog_articles() {
     // Set a date for filtering articles
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
 
+    // Create a SubstackFetcher instance
+    let fetcher = SubstackFetcher;
+
     // Call the function under test with the mock server URL
     let mock_url = mockito::server_url();
-    let api_url = format!("{}/api/v1/posts?limit=50", mock_url);
-    let articles = fetch_substack_blog_articles(&api_url, &since_date, "TestBlog", "https://test.com").unwrap();
+    let articles = fetcher.fetch_articles(&mock_url, &since_date, "TestBlog").unwrap();
 
     // Assert the results
     assert_eq!(articles.len(), 1);
     assert_eq!(articles[0].title, "Test Article");
-    assert_eq!(articles[0].url, "https://test.com/p/test-article");
+    assert_eq!(articles[0].url, format!("{}/p/test-article", mock_url));
     assert_eq!(articles[0].date, NaiveDate::from_ymd_opt(2024, 10, 1).unwrap());
 }
 
@@ -77,8 +85,11 @@ fn test_fetch_rss_blog_articles() {
     // Set a date for filtering articles
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
 
+    // Create an RSSFetcher instance
+    let fetcher = RSSFetcher;
+
     // Call the function under test with the mock server URL
-    let articles = fetch_rss_blog_articles(&mockito::server_url(), &since_date, "TestRSSBlog").unwrap();
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestRSSBlog").unwrap();
 
     // Assert the results
     assert_eq!(articles.len(), 1);
