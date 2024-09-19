@@ -1,2 +1,0 @@
-TestBlog|http://localhost:1234|Substack
-AnotherBlog|http://localhost:5678|RSS
