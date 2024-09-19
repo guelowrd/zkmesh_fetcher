@@ -1,4 +1,4 @@
-use crate::{run_with_args, read_blogs_from_file, FeedType};
+use crate::run_with_args;
 use std::fs::File;
 use std::io::Write;
 use tempfile::NamedTempFile;

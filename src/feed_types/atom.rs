@@ -1,6 +1,7 @@
 use super::ArticleFetcher;
 use crate::BlogArticle;
 use crate::errors::AppError;
+use crate::utils::parse_rss_date;
 use chrono::NaiveDate;
 use reqwest::blocking::Client;
 use atom_syndication;
@@ -19,7 +20,7 @@ impl ArticleFetcher for AtomFetcher {
         for entry in feed.entries() {
             let title = entry.title().to_string();
             if let Some(link) = entry.links.first() {
-                let date = crate::parse_rss_date(&entry.updated.to_rfc2822())?;
+                let date = parse_rss_date(&entry.updated.to_rfc2822())?;
                 if date >= *since_date {
                     articles.push(BlogArticle {
                         title,

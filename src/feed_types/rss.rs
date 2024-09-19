@@ -1,6 +1,7 @@
 use super::ArticleFetcher;
 use crate::BlogArticle;
 use crate::errors::AppError;
+use crate::utils::parse_rss_date;
 use chrono::NaiveDate;
 use reqwest::blocking::Client;
 use rss::Channel;
@@ -18,7 +19,7 @@ impl ArticleFetcher for RssFetcher {
 
         for item in channel.items() {
             if let (Some(title), Some(link), Some(pub_date)) = (item.title(), item.link(), item.pub_date()) {
-                let date = crate::parse_rss_date(pub_date)?;
+                let date = parse_rss_date(pub_date)?;
                 if date >= *since_date {
                     articles.push(BlogArticle {
                         title: title.to_string(),
