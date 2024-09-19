@@ -13,16 +13,20 @@ fn test_read_blogs_from_file() {
     let mut file = File::create(path).unwrap();
     writeln!(file, "TestBlog|https://test.com|Substack").unwrap();
     writeln!(file, "AnotherBlog|https://another.com|RSS").unwrap();
+    writeln!(file, "AlsoThisBlog|https://alsothis.com|Atom").unwrap();
     
     let blogs = read_blogs_from_file(path).unwrap();
     
-    assert_eq!(blogs.len(), 2);
+    assert_eq!(blogs.len(), 3);
     assert_eq!(blogs[0].name, "TestBlog");
     assert_eq!(blogs[0].domain, "https://test.com");
     assert_eq!(blogs[0].feed_type, FeedType::Substack);
     assert_eq!(blogs[1].name, "AnotherBlog");
     assert_eq!(blogs[1].domain, "https://another.com");
     assert_eq!(blogs[1].feed_type, FeedType::RSS);
+    assert_eq!(blogs[2].name, "AlsoThisBlog");
+    assert_eq!(blogs[2].domain, "https://alsothis.com");
+    assert_eq!(blogs[2].feed_type, FeedType::Atom);    
 }
 
 #[test]
