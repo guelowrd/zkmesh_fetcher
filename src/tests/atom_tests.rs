@@ -4,7 +4,7 @@ use mockito::mock;
 
 #[test]
 fn test_fetch_atom_blog_articles() {
-    // Create a new test similar to the RSS and Substack tests
+    // Test similar to the RSS and Substack tests
     // but using AtomFetcher and appropriate mock data
     let mock_response = r#"
     <?xml version="1.0" encoding="utf-8"?>

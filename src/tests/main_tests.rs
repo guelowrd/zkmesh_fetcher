@@ -1,88 +1,154 @@
-use crate::{read_blogs_from_file, parse_rss_date, FeedType};
-use chrono::NaiveDate;
+use crate::{run_with_args, read_blogs_from_file, FeedType};
+use std::fs::File;
+use std::io::Write;
+use tempfile::NamedTempFile;
+use mockito::mock;
 
 #[test]
-fn test_read_blogs_from_file() {
-    let blogs = read_blogs_from_file("./src/tests/test_blogs.txt").unwrap();
+fn test_main_function() {
+    use mockito::mock;
+
+    // Set up mock servers for different feed types
+    let substack_mock = mock("GET", "/api/v1/posts/?limit=50")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .with_body(r#"[{"title":"Test Substack Article","slug":"test-article","post_date":"2024-10-01T00:00:00.000Z"}]"#)
+        .create();
+
+    let rss_mock = mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/rss+xml")
+        .with_body(r#"
+            <?xml version="1.0" encoding="UTF-8"?>
+            <rss version="2.0">
+                <channel>
+                    <item>
+                        <title>Test RSS Article</title>
+                        <link>https://test.com/rss-article</link>
+                        <pubDate>Tue, 01 Oct 2024 12:00:00 GMT</pubDate>
+                    </item>
+                </channel>
+            </rss>
+        "#)
+        .create();
+
+    let atom_mock = mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/atom+xml")
+        .with_body(r#"
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+                <entry>
+                    <title>Test Atom Article</title>
+                    <link href="https://test.com/atom-article"/>
+                    <updated>2024-10-01T12:00:00Z</updated>
+                </entry>
+            </feed>
+        "#)
+        .create();
+
+    // Create a temporary file with test blog data
+    let temp_file = NamedTempFile::new().unwrap();
+    let path = temp_file.path().to_str().unwrap();
     
-    assert_eq!(blogs.len(), 2);
-    assert_eq!(blogs[0].name, "TestBlog");
-    assert_eq!(blogs[0].domain, "https://test.com");
-    assert_eq!(blogs[0].feed_type, FeedType::Substack);
+    let mut file = File::create(path).unwrap();
+    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url()).unwrap();
+    writeln!(file, "TestRSS|{}|RSS", mockito::server_url()).unwrap();
+    writeln!(file, "TestAtom|{}|Atom", mockito::server_url()).unwrap();
+
+    // Run the main function with test arguments
+    let args = vec![
+        "program_name".to_string(),
+        path.to_string(),
+        "2024-09-01".to_string(),
+    ];
+    let result = run_with_args(args);
+    assert!(result.is_ok());
+
+    // Assert that the mocks were called
+    substack_mock.assert();
+    rss_mock.assert();
+    atom_mock.assert();
 }
 
 #[test]
-fn test_parse_rss_date() {
-    let date1 = "Tue, 01 Oct 2024 12:00:00 GMT";
-    let date2 = "2024-10-01T12:00:00+00:00";
-    let date3 = "2024-10-01";
+fn test_run_with_args() {
+    // Set up mock servers for different feed types
+    let substack_mock = mock("GET", "/api/v1/posts/?limit=50")
+        .with_status(200)
+        .with_header("content-type", "application/json")
+        .with_body(r#"[{"title":"Test Substack Article","slug":"test-article","post_date":"2024-10-01T00:00:00.000Z"}]"#)
+        .create();
+
+    let rss_mock = mock("GET", "/rss")
+        .with_status(200)
+        .with_header("content-type", "application/rss+xml")
+        .with_body(r#"
+            <?xml version="1.0" encoding="UTF-8"?>
+            <rss version="2.0">
+                <channel>
+                    <item>
+                        <title>Test RSS Article</title>
+                        <link>https://test.com/rss-article</link>
+                        <pubDate>Tue, 01 Oct 2024 12:00:00 GMT</pubDate>
+                    </item>
+                </channel>
+            </rss>
+        "#)
+        .create();
+
+    let atom_mock = mock("GET", "/atom")
+        .with_status(200)
+        .with_header("content-type", "application/atom+xml")
+        .with_body(r#"
+            <?xml version="1.0" encoding="utf-8"?>
+            <feed xmlns="http://www.w3.org/2005/Atom">
+                <entry>
+                    <title>Test Atom Article</title>
+                    <link href="https://test.com/atom-article"/>
+                    <updated>2024-10-01T12:00:00Z</updated>
+                </entry>
+            </feed>
+        "#)
+        .create();
+
+    // Create a temporary file with test blog data
+    let temp_file = NamedTempFile::new().unwrap();
+    let path = temp_file.path().to_str().unwrap();
     
-    assert_eq!(
-        parse_rss_date(date1).expect("Failed to parse date1"),
-        NaiveDate::from_ymd_opt(2024, 10, 1).expect("Failed to create NaiveDate")
-    );
-    assert_eq!(
-        parse_rss_date(date2).expect("Failed to parse date2"),
-        NaiveDate::from_ymd_opt(2024, 10, 1).expect("Failed to create NaiveDate")
-    );assert_eq!(
-        parse_rss_date(date3).expect("Failed to parse date3"),
-        NaiveDate::from_ymd_opt(2024, 10, 1).expect("Failed to create NaiveDate")
-    );
-    
-    assert!(parse_rss_date("Invalid Date").is_err());
+    let mut file = File::create(path).unwrap();
+    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url()).unwrap();
+    writeln!(file, "TestRSS|{}/rss|RSS", mockito::server_url()).unwrap();
+    writeln!(file, "TestAtom|{}/atom|Atom", mockito::server_url()).unwrap();
+
+    // Run the main function with test arguments
+    let args = vec![
+        "program_name".to_string(),
+        path.to_string(),
+        "2024-09-01".to_string(),
+    ];
+    let result = run_with_args(args);
+    assert!(result.is_ok());
+
+    // Assert that the mocks were called
+    substack_mock.assert();
+    rss_mock.assert();
+    atom_mock.assert();
 }
 
-// #[test]
-// fn test_main_functionality() {
-//     // Create a temporary file with test data
-//     let temp_file = "test_blogs.txt";
-//     let content = "TestBlog|http://localhost:1234|Substack\nAnotherBlog|http://localhost:5678|RSS\n";
-//     File::create(temp_file).unwrap().write_all(content.as_bytes()).unwrap();
+#[test]
+fn test_run_with_args_invalid_date() {
+    let temp_file = NamedTempFile::new().unwrap();
+    let path = temp_file.path().to_str().unwrap();
+    
+    let mut file = File::create(path).unwrap();
+    writeln!(file, "TestBlog|https://test.com|Substack").unwrap();
 
-//     // Mock the Substack API response
-//     let _m1 = mock("GET", "/api/v1/posts/?limit=50")
-//         .with_status(200)
-//         .with_header("content-type", "application/json")
-//         .with_body(r#"[{"title":"Test Article","slug":"test-article","post_date":"2024-10-01T00:00:00Z"}]"#)
-//         .create();
-
-//     // Mock the RSS feed response
-//     let _m2 = mock("GET", "/")
-//         .with_status(200)
-//         .with_header("content-type", "application/rss+xml")
-//         .with_body(r#"<?xml version="1.0" encoding="UTF-8"?>
-//         <rss version="2.0">
-//             <channel>
-//                 <item>
-//                     <title>Test RSS Article</title>
-//                     <link>https://test.com/rss-article</link>
-//                     <pubDate>Tue, 01 Oct 2024 12:00:00 GMT</pubDate>
-//                 </item>
-//             </channel>
-//         </rss>"#)
-//         .create();
-
-//     // Run the main function
-//     let blogs = read_blogs_from_file(temp_file).unwrap();
-//     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
-
-//     for blog in blogs {
-//         let fetcher: Box<dyn ArticleFetcher> = match blog.feed_type {
-//             FeedType::Substack => Box::new(SubstackFetcher),
-//             FeedType::RSS => Box::new(RssFetcher),
-//             FeedType::Atom => Box::new(AtomFetcher),
-//         };
-
-//         let articles = fetcher.fetch_articles(&blog.domain, &since_date, &blog.name).unwrap();
-
-//         assert!(!articles.is_empty());
-//         for article in articles {
-//             assert!(!article.title.is_empty());
-//             assert!(!article.url.is_empty());
-//             assert!(article.date >= since_date);
-//         }
-//     }
-
-//     // Clean up
-//     std::fs::remove_file(temp_file).unwrap();
-// }
+    let args = vec![
+        "program_name".to_string(),
+        path.to_string(),
+        "invalid_date".to_string(),
+    ];
+    let result = run_with_args(args);
+    assert!(result.is_err());
+}

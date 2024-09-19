@@ -1497,4 +1497,5 @@ dependencies = [
  "reqwest",
  "rss",
  "serde_json",
+ "tempfile",
 ]

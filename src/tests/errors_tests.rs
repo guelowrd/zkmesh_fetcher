@@ -6,7 +6,7 @@ use chrono::NaiveDate;
 #[test]
 fn test_app_error_display() {
 
-    //TODO: AppError::NetworkError, somehow I'm struggling with this one
+    //TODO: AppError::NetworkError
 
     let parse_error = AppError::ParseError("Invalid format".to_string());
     assert_eq!(parse_error.to_string(), "Parse error: Invalid format");

@@ -4,3 +4,4 @@ mod substack_tests;
 mod rss_tests;
 mod atom_tests;
 mod errors_tests;
+mod utils_tests;
