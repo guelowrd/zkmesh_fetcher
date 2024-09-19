@@ -2,6 +2,10 @@ use crate::errors::AppError;
 use std::io;
 use std::str::FromStr;
 use chrono::NaiveDate;
+use crate::utils::read_blogs_from_file;
+use tempfile::NamedTempFile;
+use std::fs::File;
+use std::io::Write;
 
 #[test]
 fn test_app_error_display() {
@@ -76,4 +80,24 @@ fn test_app_error_from_rss() {
     let rss_error = rss::Error::InvalidStartTag;
     let app_error: AppError = rss_error.into();
     assert!(matches!(app_error, AppError::ParseError(_)));
+}
+
+#[test]
+fn test_read_blogs_from_file_invalid_format() {
+    let temp_file = NamedTempFile::new().unwrap();
+    let path = temp_file.path().to_str().unwrap();
+    
+    let mut file = File::create(path).unwrap();
+    writeln!(file, "InvalidLine|MissingFeedType").unwrap();
+    
+    let result = read_blogs_from_file(path);
+    
+    assert!(result.is_err());
+    if let Err(e) = result {
+        assert!(matches!(e, AppError::ParseError(_)));
+        assert_eq!(
+            e.to_string(),
+            "Parse error: Invalid line format: InvalidLine|MissingFeedType"
+        );
+    }
 }
