@@ -28,8 +28,8 @@ pub struct BlogArticle {
 
 fn main() -> Result<(), AppError> {
     let args: Vec<String> = env::args().collect();
-    let blogs_file = args.get(1).map(|s| s.as_str()).unwrap_or("blogs.txt");
-    let since_date_str = args.get(2).map(|s| s.as_str()).unwrap_or("2024-09-01");
+    let blogs_file = args.get(1).ok_or_else(|| AppError::ParseError("Missing blogs file argument".to_string()))?;
+    let since_date_str = args.get(2).ok_or_else(|| AppError::ParseError("Missing since date argument".to_string()))?;
 
     let blogs = utils::read_blogs_from_file(blogs_file)?;
     let since_date = NaiveDate::parse_from_str(since_date_str, "%Y-%m-%d")?;
@@ -53,8 +53,8 @@ fn main() -> Result<(), AppError> {
 
 #[cfg(test)]
 pub fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
-    let blogs_file = args.get(1).map(|s| s.as_str()).unwrap_or("blogs.txt");
-    let since_date_str = args.get(2).map(|s| s.as_str()).unwrap_or("2024-09-01");
+    let blogs_file = args.get(1).ok_or_else(|| AppError::ParseError("Missing blogs file argument".to_string()))?;
+    let since_date_str = args.get(2).ok_or_else(|| AppError::ParseError("Missing since date argument".to_string()))?;
 
     let blogs = utils::read_blogs_from_file(blogs_file)?;
     let since_date = NaiveDate::parse_from_str(since_date_str, "%Y-%m-%d")?;

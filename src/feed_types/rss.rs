@@ -18,16 +18,18 @@ impl ArticleFetcher for RssFetcher {
         let mut articles = Vec::new();
 
         for item in channel.items() {
-            if let (Some(title), Some(link), Some(pub_date)) = (item.title(), item.link(), item.pub_date()) {
-                let date = parse_rss_date(pub_date)?;
-                if date >= *since_date {
-                    articles.push(BlogArticle {
-                        title: title.to_string(),
-                        url: link.to_string(),
-                        date,
-                        blog_name: blog_name.to_string(),
-                    });
-                }
+            let title = item.title().ok_or_else(|| AppError::ParseError("Missing title".to_string()))?;
+            let link = item.link().ok_or_else(|| AppError::ParseError("Missing link".to_string()))?;
+            let pub_date = item.pub_date().ok_or_else(|| AppError::ParseError("Missing publication date".to_string()))?;
+            
+            let date = parse_rss_date(pub_date)?;
+            if date >= *since_date {
+                articles.push(BlogArticle {
+                    title: title.to_string(),
+                    url: link.to_string(),
+                    date,
+                    blog_name: blog_name.to_string(),
+                });
             }
         }
 

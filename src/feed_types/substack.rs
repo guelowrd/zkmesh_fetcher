@@ -17,11 +17,11 @@ impl ArticleFetcher for SubstackFetcher {
 
         if let Some(posts) = json.as_array() {
             for post in posts {
-                let title = post["title"].as_str().unwrap_or_default().to_string();
-                let slug = post["slug"].as_str().unwrap_or_default();
+                let title = post["title"].as_str().ok_or_else(|| AppError::ParseError("Missing title".to_string()))?.to_string();
+                let slug = post["slug"].as_str().ok_or_else(|| AppError::ParseError("Missing slug".to_string()))?;
                 let url = format!("{}/p/{}", feed_url.trim_end_matches("/api/v1/posts/?limit=50"), slug);
-                let date_str = post["post_date"].as_str().unwrap_or_default();
-                let date = NaiveDate::parse_from_str(&date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
+                let date_str = post["post_date"].as_str().ok_or_else(|| AppError::ParseError("Missing post_date".to_string()))?;
+                let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
                 if date >= *since_date {
                     articles.push(BlogArticle { title, url, date, blog_name: blog_name.to_string() });
                 }
