@@ -1,11 +1,22 @@
 use crate::feed_types::FeedType;
 use chrono::NaiveDate;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BlogInfo {
     pub name: String,
     pub domain: String,
     pub feed_type: FeedType,
+    pub custom_selectors: Option<CustomSelectors>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CustomSelectors {
+    pub article_selector: String,
+    pub title_selector: String,
+    pub url_selector: String,
+    pub date_selector: String,
+    pub date_format: String,
 }
 
 #[derive(Debug)]

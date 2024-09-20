@@ -88,16 +88,13 @@ fn test_read_blogs_from_file_invalid_format() {
     let path = temp_file.path().to_str().expect("Failed to get path as string");
     
     let mut file = File::create(path).expect("Failed to create file");
-    writeln!(file, "InvalidLine|MissingFeedType").expect("Failed to write invalid line to file");
+    writeln!(file, "{{\"invalid\": \"json\"}}").expect("Failed to write invalid JSON to file");
     
     let result = read_blogs_from_file(path);
     
     assert!(result.is_err());
     if let Err(e) = result {
         assert!(matches!(e, AppError::ParseError(_)));
-        assert_eq!(
-            e.to_string(),
-            "Parse error: Invalid line format: InvalidLine|MissingFeedType"
-        );
+        assert!(e.to_string().contains("Failed to parse JSON"));
     }
 }

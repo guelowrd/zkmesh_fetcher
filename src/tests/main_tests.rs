@@ -1,9 +1,9 @@
 use crate::run_with_args;
 use std::fs::File;
-use std::io::Write;
 use tempfile::NamedTempFile;
 use mockito::mock;
 use tokio;
+use serde_json;
 
 #[tokio::test]
 async fn test_main_function() {
@@ -48,17 +48,58 @@ async fn test_main_function() {
         "#)
         .create();
 
+    let custom_html_mock = mock("GET", "/custom")
+        .with_status(200)
+        .with_header("content-type", "text/html")
+        .with_body(r#"
+            <html>
+                <body>
+                    <div class="post-feed">
+                        <article>
+                            <h2 class="post-card-title"><a href="https://test.com/custom-article">Test Custom HTML Article</a></h2>
+                            <time class="post-card-meta-date">October 1, 2024</time>
+                        </article>
+                    </div>
+                </body>
+            </html>
+        "#)
+        .create();
+
     // Create a temporary file with test blog data
     let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
     let path = temp_file.path().to_str().expect("Failed to get path as string");
 
-    let mut file = File::create(path).expect("Failed to create file");
-    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url())
-        .expect("Failed to write TestSubstack to file");
-    writeln!(file, "TestRSS|{}|RSS", mockito::server_url())
-        .expect("Failed to write TestRSS to file");
-    writeln!(file, "TestAtom|{}|Atom", mockito::server_url())
-        .expect("Failed to write TestAtom to file");
+    let file = File::create(path).expect("Failed to create file");
+    let json_content = serde_json::json!([
+        {
+            "name": "TestSubstack",
+            "domain": format!("{}/api/v1/posts/?limit=50", mockito::server_url()),
+            "feed_type": "Substack"
+        },
+        {
+            "name": "TestRSS",
+            "domain": mockito::server_url(),
+            "feed_type": "RSS"
+        },
+        {
+            "name": "TestAtom",
+            "domain": mockito::server_url(),
+            "feed_type": "Atom"
+        },
+        {
+            "name": "TestCustomHTML",
+            "domain": format!("{}/custom", mockito::server_url()),
+            "feed_type": "CustomHTML",
+            "custom_selectors": {
+                "article_selector": "div.post-feed article",
+                "title_selector": "h2.post-card-title a",
+                "url_selector": "h2.post-card-title a[href]",
+                "date_selector": "time.post-card-meta-date",
+                "date_format": "%B %d, %Y"
+            }
+        }
+    ]);
+    serde_json::to_writer_pretty(file, &json_content).expect("Failed to write JSON to file");
 
     // Run the main function with test arguments
     let args = vec![
@@ -73,6 +114,7 @@ async fn test_main_function() {
     substack_mock.assert();
     rss_mock.assert();
     atom_mock.assert();
+    custom_html_mock.assert();
 }
 
 #[tokio::test]
@@ -116,17 +158,58 @@ async fn test_run_with_args() {
         "#)
         .create();
 
+    let custom_html_mock = mock("GET", "/custom")
+        .with_status(200)
+        .with_header("content-type", "text/html")
+        .with_body(r#"
+            <html>
+                <body>
+                    <div class="post-feed">
+                        <article>
+                            <h2 class="post-card-title"><a href="https://test.com/custom-article">Test Custom HTML Article</a></h2>
+                            <time class="post-card-meta-date">October 1, 2024</time>
+                        </article>
+                    </div>
+                </body>
+            </html>
+        "#)
+        .create();
+
     // Create a temporary file with test blog data
     let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
     let path = temp_file.path().to_str().expect("Failed to get path as string");
 
-    let mut file = File::create(path).expect("Failed to create file");
-    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url())
-        .expect("Failed to write TestSubstack to file");
-    writeln!(file, "TestRSS|{}/rss|RSS", mockito::server_url())
-        .expect("Failed to write TestRSS to file");
-    writeln!(file, "TestAtom|{}/atom|Atom", mockito::server_url())
-        .expect("Failed to write TestAtom to file");
+    let file = File::create(path).expect("Failed to create file");
+    let json_content = serde_json::json!([
+        {
+            "name": "TestSubstack",
+            "domain": format!("{}/api/v1/posts/?limit=50", mockito::server_url()),
+            "feed_type": "Substack"
+        },
+        {
+            "name": "TestRSS",
+            "domain": format!("{}/rss", mockito::server_url()),
+            "feed_type": "RSS"
+        },
+        {
+            "name": "TestAtom",
+            "domain": format!("{}/atom", mockito::server_url()),
+            "feed_type": "Atom"
+        },
+        {
+            "name": "TestCustomHTML",
+            "domain": format!("{}/custom", mockito::server_url()),
+            "feed_type": "CustomHTML",
+            "custom_selectors": {
+                "article_selector": "div.post-feed article",
+                "title_selector": "h2.post-card-title a",
+                "url_selector": "h2.post-card-title a[href]",
+                "date_selector": "time.post-card-meta-date",
+                "date_format": "%B %d, %Y"
+            }
+        }
+    ]);
+    serde_json::to_writer_pretty(file, &json_content).expect("Failed to write JSON to file");
 
     // Run the main function with test arguments
     let args = vec![
@@ -141,6 +224,7 @@ async fn test_run_with_args() {
     substack_mock.assert();
     rss_mock.assert();
     atom_mock.assert();
+    custom_html_mock.assert();
 }
 
 #[tokio::test]
@@ -148,8 +232,15 @@ async fn test_run_with_args_invalid_date() {
     let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
     let path = temp_file.path().to_str().expect("Failed to get path as string");
     
-    let mut file = File::create(path).expect("Failed to create file");
-    writeln!(file, "TestBlog|https://test.com|Substack").expect("Failed to write to file");
+    let file = File::create(path).expect("Failed to create file");
+    let json_content = serde_json::json!([
+        {
+            "name": "TestBlog",
+            "domain": "https://test.com",
+            "feed_type": "Substack"
+        }
+    ]);
+    serde_json::to_writer_pretty(file, &json_content).expect("Failed to write JSON to file");
 
     let args = vec![
         "program_name".to_string(),

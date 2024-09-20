@@ -1,10 +1,12 @@
 mod substack;
 mod rss;
 mod atom;
+mod custom_html;
 
 pub use substack::SubstackFetcher;
 pub use rss::RssFetcher;
 pub use atom::AtomFetcher;
+pub use custom_html::CustomHtmlFetcher;
 
 use chrono::NaiveDate;
 use crate::models::BlogArticle;
@@ -17,11 +19,14 @@ pub trait ArticleFetcher: Send {
     async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError>;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum FeedType {
     Substack,
     RSS,
     Atom,
+    CustomHTML,
 }
 
 impl std::str::FromStr for FeedType {
@@ -32,6 +37,7 @@ impl std::str::FromStr for FeedType {
             "Substack" => Ok(FeedType::Substack),
             "RSS" => Ok(FeedType::RSS),
             "Atom" => Ok(FeedType::Atom),
+            "CustomHTML" => Ok(FeedType::CustomHTML),
             _ => Err(AppError::UnknownFeedType(s.to_string())),
         }
     }

@@ -11,7 +11,7 @@ mod utils;
 mod config;
 mod models;
 
-use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher};
+use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher, CustomHtmlFetcher};
 use errors::AppError;
 
 #[tokio::main]
@@ -30,6 +30,17 @@ async fn main() -> Result<(), AppError> {
             FeedType::Substack => Box::new(SubstackFetcher),
             FeedType::RSS => Box::new(RssFetcher),
             FeedType::Atom => Box::new(AtomFetcher),
+            FeedType::CustomHTML => {
+                let custom_selectors = blog.custom_selectors.as_ref()
+                    .ok_or_else(|| AppError::ParseError("Missing custom selectors for CustomHTML".to_string()))?;
+                Box::new(CustomHtmlFetcher {
+                    article_selector: custom_selectors.article_selector.clone(),
+                    title_selector: custom_selectors.title_selector.clone(),
+                    url_selector: custom_selectors.url_selector.clone(),
+                    date_selector: custom_selectors.date_selector.clone(),
+                    date_format: custom_selectors.date_format.clone(),
+                })
+            },
         };
 
         let task = tokio::spawn(async move {
@@ -63,6 +74,17 @@ pub async fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
             FeedType::Substack => Box::new(SubstackFetcher),
             FeedType::RSS => Box::new(RssFetcher),
             FeedType::Atom => Box::new(AtomFetcher),
+            FeedType::CustomHTML => {
+                let custom_selectors = blog.custom_selectors.as_ref()
+                    .ok_or_else(|| AppError::ParseError("Missing custom selectors for CustomHTML".to_string()))?;
+                Box::new(CustomHtmlFetcher {
+                    article_selector: custom_selectors.article_selector.clone(),
+                    title_selector: custom_selectors.title_selector.clone(),
+                    url_selector: custom_selectors.url_selector.clone(),
+                    date_selector: custom_selectors.date_selector.clone(),
+                    date_format: custom_selectors.date_format.clone(),
+                })
+            },
         };
 
         let task = tokio::spawn(async move {
