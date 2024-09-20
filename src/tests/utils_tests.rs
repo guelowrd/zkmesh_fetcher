@@ -8,13 +8,13 @@ use tempfile::NamedTempFile;
 
 #[test]
 fn test_read_blogs_from_file() {
-    let temp_file = NamedTempFile::new().unwrap();
-    let path = temp_file.path().to_str().unwrap();
+    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
+    let path = temp_file.path().to_str().expect("Failed to get path as string");
     
-    let mut file = File::create(path).unwrap();
-    writeln!(file, "TestBlog|https://test.com|Substack").unwrap();
-    writeln!(file, "AnotherBlog|https://another.com|RSS").unwrap();
-    writeln!(file, "AlsoThisBlog|https://alsothis.com|Atom").unwrap();
+    let mut file = File::create(path).expect("Failed to create file");
+    writeln!(file, "TestBlog|https://test.com|Substack").expect("Failed to write TestBlog to file");
+    writeln!(file, "AnotherBlog|https://another.com|RSS").expect("Failed to write AnotherBlog to file");
+    writeln!(file, "AlsoThisBlog|https://alsothis.com|Atom").expect("Failed to write AlsoThisBlog to file");
     
     let blogs = read_blogs_from_file(path).unwrap();
     
