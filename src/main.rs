@@ -8,24 +8,11 @@ use tokio;
 mod feed_types;
 mod errors;
 mod utils;
+mod config;
+mod models;
 
 use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher};
 use errors::AppError;
-
-#[derive(Debug)]
-pub struct BlogInfo {
-    pub name: String,
-    pub domain: String,
-    pub feed_type: FeedType,
-}
-
-#[derive(Debug)]
-pub struct BlogArticle {
-    pub title: String,
-    pub url: String,
-    pub date: NaiveDate,
-    pub blog_name: String,
-}
 
 #[tokio::main]
 async fn main() -> Result<(), AppError> {
@@ -33,7 +20,7 @@ async fn main() -> Result<(), AppError> {
     let blogs_file = args.get(1).ok_or_else(|| AppError::ParseError("Missing blogs file argument".to_string()))?;
     let since_date_str = args.get(2).ok_or_else(|| AppError::ParseError("Missing since date argument".to_string()))?;
 
-    let blogs = utils::read_blogs_from_file(blogs_file)?;
+    let blogs = config::read_blogs_from_file(blogs_file)?;
     let since_date = NaiveDate::parse_from_str(since_date_str, "%Y-%m-%d")?;
 
     let mut tasks = Vec::new();
@@ -66,7 +53,7 @@ pub async fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
     let blogs_file = args.get(1).ok_or_else(|| AppError::ParseError("Missing blogs file argument".to_string()))?;
     let since_date_str = args.get(2).ok_or_else(|| AppError::ParseError("Missing since date argument".to_string()))?;
 
-    let blogs = utils::read_blogs_from_file(blogs_file)?;
+    let blogs = config::read_blogs_from_file(blogs_file)?;
     let since_date = NaiveDate::parse_from_str(since_date_str, "%Y-%m-%d")?;
 
     let mut tasks = Vec::new();

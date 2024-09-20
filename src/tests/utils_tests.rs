@@ -1,4 +1,5 @@
-use crate::utils::{read_blogs_from_file, parse_rss_date};
+use crate::utils::parse_rss_date;
+use crate::config::read_blogs_from_file;
 use crate::feed_types::FeedType;
 use chrono::NaiveDate;
 use std::fs::File;

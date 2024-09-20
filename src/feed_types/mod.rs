@@ -7,7 +7,7 @@ pub use rss::RssFetcher;
 pub use atom::AtomFetcher;
 
 use chrono::NaiveDate;
-use crate::BlogArticle;
+use crate::models::BlogArticle;
 use crate::errors::AppError;
 
 use async_trait::async_trait;

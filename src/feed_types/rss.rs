@@ -1,5 +1,5 @@
 use super::ArticleFetcher;
-use crate::BlogArticle;
+use crate::models::BlogArticle;
 use crate::errors::AppError;
 use crate::utils::parse_rss_date;
 use chrono::NaiveDate;

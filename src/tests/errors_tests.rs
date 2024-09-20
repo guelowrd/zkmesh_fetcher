@@ -2,7 +2,7 @@ use crate::errors::AppError;
 use std::io;
 use std::str::FromStr;
 use chrono::NaiveDate;
-use crate::utils::read_blogs_from_file;
+use crate::config::read_blogs_from_file;
 use tempfile::NamedTempFile;
 use std::fs::File;
 use std::io::Write;
