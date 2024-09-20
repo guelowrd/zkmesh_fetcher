@@ -1,4 +1,4 @@
-# ZKMesh Fetcher
+# zkMesh Fetcher
 
 zkMesh monthly newsletter sharing the latest in decentralised privacy-preserving technologies, privacy protocol development and zero-knowledge systems – you can check it out and subscribe [here](https://zkmesh.substack.com/).
 
