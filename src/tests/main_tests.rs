@@ -49,13 +49,16 @@ async fn test_main_function() {
         .create();
 
     // Create a temporary file with test blog data
-    let temp_file = NamedTempFile::new().unwrap();
-    let path = temp_file.path().to_str().unwrap();
-    
-    let mut file = File::create(path).unwrap();
-    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url()).unwrap();
-    writeln!(file, "TestRSS|{}|RSS", mockito::server_url()).unwrap();
-    writeln!(file, "TestAtom|{}|Atom", mockito::server_url()).unwrap();
+    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
+    let path = temp_file.path().to_str().expect("Failed to get path as string");
+
+    let mut file = File::create(path).expect("Failed to create file");
+    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url())
+        .expect("Failed to write TestSubstack to file");
+    writeln!(file, "TestRSS|{}|RSS", mockito::server_url())
+        .expect("Failed to write TestRSS to file");
+    writeln!(file, "TestAtom|{}|Atom", mockito::server_url())
+        .expect("Failed to write TestAtom to file");
 
     // Run the main function with test arguments
     let args = vec![
@@ -114,13 +117,16 @@ async fn test_run_with_args() {
         .create();
 
     // Create a temporary file with test blog data
-    let temp_file = NamedTempFile::new().unwrap();
-    let path = temp_file.path().to_str().unwrap();
-    
-    let mut file = File::create(path).unwrap();
-    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url()).unwrap();
-    writeln!(file, "TestRSS|{}/rss|RSS", mockito::server_url()).unwrap();
-    writeln!(file, "TestAtom|{}/atom|Atom", mockito::server_url()).unwrap();
+    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
+    let path = temp_file.path().to_str().expect("Failed to get path as string");
+
+    let mut file = File::create(path).expect("Failed to create file");
+    writeln!(file, "TestSubstack|{}/api/v1/posts/?limit=50|Substack", mockito::server_url())
+        .expect("Failed to write TestSubstack to file");
+    writeln!(file, "TestRSS|{}/rss|RSS", mockito::server_url())
+        .expect("Failed to write TestRSS to file");
+    writeln!(file, "TestAtom|{}/atom|Atom", mockito::server_url())
+        .expect("Failed to write TestAtom to file");
 
     // Run the main function with test arguments
     let args = vec![
