@@ -3,9 +3,10 @@ use std::fs::File;
 use std::io::Write;
 use tempfile::NamedTempFile;
 use mockito::mock;
+use tokio;
 
-#[test]
-fn test_main_function() {
+#[tokio::test]
+async fn test_main_function() {
     use mockito::mock;
 
     // Set up mock servers for different feed types
@@ -62,7 +63,7 @@ fn test_main_function() {
         path.to_string(),
         "2024-09-01".to_string(),
     ];
-    let result = run_with_args(args);
+    let result = run_with_args(args).await;
     assert!(result.is_ok());
 
     // Assert that the mocks were called
@@ -71,8 +72,8 @@ fn test_main_function() {
     atom_mock.assert();
 }
 
-#[test]
-fn test_run_with_args() {
+#[tokio::test]
+async fn test_run_with_args() {
     // Set up mock servers for different feed types
     let substack_mock = mock("GET", "/api/v1/posts/?limit=50")
         .with_status(200)
@@ -127,7 +128,7 @@ fn test_run_with_args() {
         path.to_string(),
         "2024-09-01".to_string(),
     ];
-    let result = run_with_args(args);
+    let result = run_with_args(args).await;
     assert!(result.is_ok());
 
     // Assert that the mocks were called
@@ -136,8 +137,8 @@ fn test_run_with_args() {
     atom_mock.assert();
 }
 
-#[test]
-fn test_run_with_args_invalid_date() {
+#[tokio::test]
+async fn test_run_with_args_invalid_date() {
     let temp_file = NamedTempFile::new().unwrap();
     let path = temp_file.path().to_str().unwrap();
     
@@ -149,6 +150,6 @@ fn test_run_with_args_invalid_date() {
         path.to_string(),
         "invalid_date".to_string(),
     ];
-    let result = run_with_args(args);
+    let result = run_with_args(args).await;
     assert!(result.is_err());
 }

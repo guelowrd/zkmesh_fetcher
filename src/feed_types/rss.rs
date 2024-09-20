@@ -3,16 +3,15 @@ use crate::BlogArticle;
 use crate::errors::AppError;
 use crate::utils::parse_rss_date;
 use chrono::NaiveDate;
-use reqwest::blocking::Client;
 use rss::Channel;
+use async_trait::async_trait;
 
 pub struct RssFetcher;
 
+#[async_trait]
 impl ArticleFetcher for RssFetcher {
-    fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
-        let client = Client::new();
-        let response = client.get(feed_url).send()?;
-        let content = response.bytes()?;
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
+        let content = reqwest::get(feed_url).await?.bytes().await?;
         let channel = Channel::read_from(&content[..])?;
 
         let mut articles = Vec::new();

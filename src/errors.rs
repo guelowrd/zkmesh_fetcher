@@ -1,6 +1,7 @@
 use std::fmt;
 use atom_syndication;
 use rss;
+use tokio;
 
 #[derive(Debug)]
 pub enum AppError {
@@ -9,6 +10,7 @@ pub enum AppError {
     DateParseError(chrono::ParseError),
     IoError(std::io::Error),
     UnknownFeedType(String),
+    AsyncRuntimeError(tokio::task::JoinError),
 }
 
 impl std::error::Error for AppError {}
@@ -21,6 +23,7 @@ impl fmt::Display for AppError {
             AppError::DateParseError(e) => write!(f, "Date parse error: {}", e),
             AppError::IoError(e) => write!(f, "IO error: {}", e),
             AppError::UnknownFeedType(t) => write!(f, "Unknown feed type: {}", t),
+            AppError::AsyncRuntimeError(e) => write!(f, "Async runtime error: {}", e),
         }
     }
 }
@@ -58,5 +61,11 @@ impl From<atom_syndication::Error> for AppError {
 impl From<rss::Error> for AppError {
     fn from(err: rss::Error) -> Self {
         AppError::ParseError(err.to_string())
+    }
+}
+
+impl From<tokio::task::JoinError> for AppError {
+    fn from(err: tokio::task::JoinError) -> Self {
+        AppError::AsyncRuntimeError(err)
     }
 }

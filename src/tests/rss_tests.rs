@@ -1,9 +1,10 @@
 use crate::feed_types::{ArticleFetcher, RssFetcher};
 use chrono::NaiveDate;
 use mockito::mock;
+use tokio;
 
-#[test]
-fn test_fetch_rss_blog_articles() {
+#[tokio::test]
+async fn test_fetch_rss_blog_articles() {
     // Define the mock RSS response
     let mock_response = r#"
     <?xml version="1.0" encoding="UTF-8"?>
@@ -32,7 +33,9 @@ fn test_fetch_rss_blog_articles() {
     let fetcher = RssFetcher;
 
     // Call the function under test with the mock server URL
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestRSSBlog").unwrap();
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestRSSBlog")
+        .await
+        .expect("Failed to fetch RSS articles");
 
     // Assert the results
     assert_eq!(articles.len(), 1);

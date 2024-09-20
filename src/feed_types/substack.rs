@@ -2,16 +2,17 @@ use super::ArticleFetcher;
 use crate::BlogArticle;
 use crate::errors::AppError;
 use chrono::NaiveDate;
-use reqwest::blocking::Client;
 use serde_json::Value;
+use async_trait::async_trait;
 
 pub struct SubstackFetcher;
 
+#[async_trait]
 impl ArticleFetcher for SubstackFetcher {
-    fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
-        let client = Client::new();
-        let response = client.get(feed_url).send()?;
-        let json: Value = response.json()?;
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
+        let client = reqwest::Client::new();
+        let response = client.get(feed_url).send().await?;
+        let json: Value = response.json().await?;
 
         let mut articles = Vec::new();
 

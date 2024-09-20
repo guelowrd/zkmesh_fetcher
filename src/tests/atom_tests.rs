@@ -1,9 +1,10 @@
 use crate::feed_types::{ArticleFetcher, AtomFetcher};
 use chrono::NaiveDate;
 use mockito::mock;
+use tokio;
 
-#[test]
-fn test_fetch_atom_blog_articles() {
+#[tokio::test]
+async fn test_fetch_atom_articles() {
     // Test similar to the RSS and Substack tests
     // but using AtomFetcher and appropriate mock data
     let mock_response = r#"
@@ -25,7 +26,9 @@ fn test_fetch_atom_blog_articles() {
 
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
     let fetcher = AtomFetcher;
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestAtomBlog").unwrap();
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestAtomBlog")
+        .await
+        .expect("Failed to fetch articles");
 
     assert_eq!(articles.len(), 1);
     assert_eq!(articles[0].title, "Test Atom Article");

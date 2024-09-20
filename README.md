@@ -24,11 +24,17 @@ zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog article
 
 Run the program with the following command:
 `bash
-cargo run [blogs_file] [since_date]
+cargo run <blogs_file> <since_date>
 `
 
-- `blogs_file`: Path to the file containing blog information (default: `blogs.txt`)
-- `since_date`: Fetch articles published since this date (default: "2024-09-01")
+- `blogs_file`: Path to the file containing blog information
+- `since_date`: Fetch articles published since this date (format: YYYY-MM-DD)
+
+Both arguments are required. For example:
+
+```bash
+cargo run blogs.txt 2024-01-01
+```
 
 ## Code Structure
 
@@ -36,10 +42,6 @@ cargo run [blogs_file] [since_date]
 - `feed_types/`: Module containing implementations for different feed types.
 - `errors.rs`: Custom error types for the application.
 - `utils.rs`: Utility functions for parsing dates and reading blog information.
-
-## Error Handling
-
-The program uses a custom `AppError` type to handle various error scenarios, including network errors, parsing errors, and I/O errors.
 
 ## Testing
 

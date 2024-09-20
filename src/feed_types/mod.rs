@@ -10,8 +10,11 @@ use chrono::NaiveDate;
 use crate::BlogArticle;
 use crate::errors::AppError;
 
-pub trait ArticleFetcher {
-    fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError>;
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait ArticleFetcher: Send {
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError>;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
