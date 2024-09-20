@@ -84,11 +84,11 @@ fn test_app_error_from_rss() {
 
 #[test]
 fn test_read_blogs_from_file_invalid_format() {
-    let temp_file = NamedTempFile::new().unwrap();
-    let path = temp_file.path().to_str().unwrap();
+    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
+    let path = temp_file.path().to_str().expect("Failed to get path as string");
     
-    let mut file = File::create(path).unwrap();
-    writeln!(file, "InvalidLine|MissingFeedType").unwrap();
+    let mut file = File::create(path).expect("Failed to create file");
+    writeln!(file, "InvalidLine|MissingFeedType").expect("Failed to write invalid line to file");
     
     let result = read_blogs_from_file(path);
     
