@@ -145,11 +145,11 @@ async fn test_run_with_args() {
 
 #[tokio::test]
 async fn test_run_with_args_invalid_date() {
-    let temp_file = NamedTempFile::new().unwrap();
-    let path = temp_file.path().to_str().unwrap();
+    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
+    let path = temp_file.path().to_str().expect("Failed to get path as string");
     
-    let mut file = File::create(path).unwrap();
-    writeln!(file, "TestBlog|https://test.com|Substack").unwrap();
+    let mut file = File::create(path).expect("Failed to create file");
+    writeln!(file, "TestBlog|https://test.com|Substack").expect("Failed to write to file");
 
     let args = vec![
         "program_name".to_string(),
