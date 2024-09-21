@@ -50,14 +50,33 @@
     "feed_type": "Atom"
   },
   {
+    "name": "Hylé",
+    "domain": "https://blog.hyle.eu/feed/",
+    "feed_type": "RSS"
+  },
+  {
     "name": "Polygon",
     "domain": "https://polygon.technology/blog",
     "feed_type": "CustomHTML",
     "custom_selectors": {
       "article_selector": ".blog-list_wrapper.w-dyn-list",
+      "article_item_selector": ".blog-list_item-wrapper",
       "title_selector": ".blog-list_heading",
       "url_selector": ".blog-list_item.w-inline-block",
       "date_selector": ".text-size-tiny.text-style-label.text-style-allcaps.text-color-grey6",
+      "date_format": "%B %d, %Y"
+    }
+  },
+  {
+    "name": "Aztec",
+    "domain": "https://aztec.network/blog",
+    "feed_type": "CustomHTML",
+    "custom_selectors": {
+      "article_selector": ".blog_gallery-collection-grid.w-dyn-items",
+      "article_item_selector": ".blog_gallery-item",
+      "title_selector": ".blog_gallery-heading",
+      "url_selector": ".blog_gallery-item-link-block",
+      "date_selector": ".blog_category-text.is-large",
       "date_format": "%B %d, %Y"
     }
   }

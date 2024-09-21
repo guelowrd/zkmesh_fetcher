@@ -7,6 +7,7 @@ use scraper::{Html, Selector};
 
 pub struct CustomHtmlFetcher {
     pub article_selector: String,
+    pub article_item_selector: String, 
     pub title_selector: String,
     pub url_selector: String,
     pub date_selector: String,
@@ -20,7 +21,7 @@ impl ArticleFetcher for CustomHtmlFetcher {
         let content = reqwest::get(feed_url).await?.text().await?;
         println!("Received HTML content: {} characters", content.len());
 
-        println!("Full HTML content:\n{}", content);
+        // println!("Full HTML content:\n{}", content);
 
         let document = Html::parse_document(&content);
 
@@ -40,12 +41,16 @@ impl ArticleFetcher for CustomHtmlFetcher {
             .map_err(|e| AppError::ParseError(format!("Invalid date selector: {:?}", e)))?;
         println!("Date selector: {}", self.date_selector);
 
+        let article_item_selector = Selector::parse(&self.article_item_selector)
+            .map_err(|e| AppError::ParseError(format!("Invalid article item selector: {:?}", e)))?;
+        println!("Article item selector: {}", self.article_item_selector);
+
         let mut blog_articles = Vec::new();
 
         let article_wrapper = document.select(&article_selector).next()
             .ok_or_else(|| AppError::ParseError("No article wrapper found".to_string()))?;
 
-        let article_elements = article_wrapper.select(&Selector::parse(".blog-list_item-wrapper").unwrap()).collect::<Vec<_>>();
+        let article_elements = article_wrapper.select(&article_item_selector).collect::<Vec<_>>();
         println!("Found {} articles", article_elements.len());
 
         for (i, article) in article_elements.iter().enumerate() {

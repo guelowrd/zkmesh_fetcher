@@ -13,6 +13,7 @@ pub struct BlogInfo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomSelectors {
     pub article_selector: String,
+    pub article_item_selector: String,
     pub title_selector: String,
     pub url_selector: String,
     pub date_selector: String,

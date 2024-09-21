@@ -93,6 +93,7 @@ async fn test_main_function() {
             "custom_selectors": {
                 "article_selector": "div.post-feed article",
                 "title_selector": "h2.post-card-title a",
+                "article_item_selector": "div.post-feed article",
                 "url_selector": "h2.post-card-title a[href]",
                 "date_selector": "time.post-card-meta-date",
                 "date_format": "%B %d, %Y"
@@ -202,6 +203,7 @@ async fn test_run_with_args() {
             "feed_type": "CustomHTML",
             "custom_selectors": {
                 "article_selector": "div.post-feed article",
+                "article_item_selector": "div.post-feed article",
                 "title_selector": "h2.post-card-title a",
                 "url_selector": "h2.post-card-title a[href]",
                 "date_selector": "time.post-card-meta-date",

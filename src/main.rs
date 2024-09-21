@@ -35,6 +35,7 @@ async fn main() -> Result<(), AppError> {
                     .ok_or_else(|| AppError::ParseError("Missing custom selectors for CustomHTML".to_string()))?;
                 Box::new(CustomHtmlFetcher {
                     article_selector: custom_selectors.article_selector.clone(),
+                    article_item_selector: custom_selectors.article_item_selector.clone(),
                     title_selector: custom_selectors.title_selector.clone(),
                     url_selector: custom_selectors.url_selector.clone(),
                     date_selector: custom_selectors.date_selector.clone(),
@@ -79,6 +80,7 @@ pub async fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
                     .ok_or_else(|| AppError::ParseError("Missing custom selectors for CustomHTML".to_string()))?;
                 Box::new(CustomHtmlFetcher {
                     article_selector: custom_selectors.article_selector.clone(),
+                    article_item_selector: custom_selectors.article_item_selector.clone(),
                     title_selector: custom_selectors.title_selector.clone(),
                     url_selector: custom_selectors.url_selector.clone(),
                     date_selector: custom_selectors.date_selector.clone(),

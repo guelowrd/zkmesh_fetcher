@@ -4,7 +4,7 @@ use mockito::mock;
 use tokio;
 
 #[tokio::test]
-async fn test_fetch_polygon_blog_articles() {
+async fn test_fetch_custom_html_articles() {
     let mock_response = r#"
     <html>
         <body>
@@ -29,6 +29,7 @@ async fn test_fetch_polygon_blog_articles() {
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
     let fetcher = CustomHtmlFetcher {
         article_selector: ".blog-list_wrapper.w-dyn-list".to_string(),
+        article_item_selector: ".blog-list_item-wrapper.w-dyn-item".to_string(),
         title_selector: ".blog-list_heading".to_string(),
         url_selector: ".blog-list_item.w-inline-block".to_string(),
         date_selector: ".text-size-tiny.text-style-label.text-style-allcaps.text-color-grey6".to_string(),

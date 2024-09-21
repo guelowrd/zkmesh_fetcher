@@ -27,6 +27,7 @@ fn test_read_blogs_from_file() {
             "feed_type": "CustomHTML",
             "custom_selectors": {
                 "article_selector": ".article",
+                "article_item_selector": ".article-item",
                 "title_selector": ".title",
                 "url_selector": ".url",
                 "date_selector": ".date",
@@ -51,6 +52,7 @@ fn test_read_blogs_from_file() {
     assert!(blogs[2].custom_selectors.is_some());
     let custom_selectors = blogs[2].custom_selectors.as_ref().unwrap();
     assert_eq!(custom_selectors.article_selector, ".article");
+    assert_eq!(custom_selectors.article_item_selector, ".article-item");
     assert_eq!(custom_selectors.title_selector, ".title");
     assert_eq!(custom_selectors.url_selector, ".url");
     assert_eq!(custom_selectors.date_selector, ".date");
