@@ -2,16 +2,17 @@
 
 zkMesh monthly newsletter sharing the latest in decentralised privacy-preserving technologies, privacy protocol development and zero-knowledge systems – you can check it out and subscribe [here](https://zkmesh.substack.com/).
 
-zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog articles from various sources, including (for now) Substack, RSS, and Atom feeds.
+zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog articles from various sources, including (for now) Substack, RSS, Atom feeds, and custom HTML pages.
 
 ## How it Works
 
 1. **Input**: The program reads a list of blogs from a file (default: `blogs.txt`). Each line in this file contains information about a blog in the format: `BlogName|FeedURL|FeedType`.
 
-2. **Feed Types**: The program supports three types of feeds:
+2. **Feed Types**: The program supports four types of feeds:
    - Substack
    - RSS
    - Atom
+   - CustomHTML
 
 3. **Fetching Articles**: For each blog in the input file, the program:
    - Determines the appropriate fetcher based on the feed type.
@@ -42,6 +43,8 @@ cargo run blogs.txt 2024-01-01
 - `feed_types/`: Module containing implementations for different feed types.
 - `errors.rs`: Custom error types for the application.
 - `utils.rs`: Utility functions for parsing dates and reading blog information.
+- `config.rs`: Functions for reading blog configurations from a file.
+- `models.rs`: Data structures used in the application.
 
 ## Testing
 
@@ -54,14 +57,6 @@ Run the tests using:
 `bash
 cargo test
 `
-
-## Dependencies
-
-- `reqwest`: For making HTTP requests
-- `chrono`: For date parsing and manipulation
-- `serde_json`: For parsing JSON responses
-- `rss`: For parsing RSS feeds
-- `atom_syndication`: For parsing Atom feeds
 
 ## License
 
