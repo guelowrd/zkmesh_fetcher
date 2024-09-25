@@ -55,6 +55,11 @@
     "feed_type": "RSS"
   },
   {
+    "name": "TACEO",
+    "domain": "https://blog.taceo.io/rss.xml",
+    "feed_type": "RSS"
+  },
+  {
     "name": "Polygon",
     "domain": "https://polygon.technology/blog",
     "feed_type": "CustomHTML",
@@ -77,6 +82,19 @@
       "title_selector": ".blog_gallery-heading",
       "url_selector": ".blog_gallery-item-link-block",
       "date_selector": ".blog_category-text.is-large",
+      "date_format": "%B %d, %Y"
+    }
+  },
+  {
+    "name": "Reclaim Protocol",
+    "domain": "https://reclaimprotocol.org/blog/posts",
+    "feed_type": "CustomHTML",
+    "custom_selectors": {
+      "article_selector": ".grid",  
+      "article_item_selector": ".group.cursor-pointer",  
+      "title_selector": "h2 a", 
+      "url_selector": "h2 a",   
+      "date_selector": "time",  
       "date_format": "%B %d, %Y"
     }
   }
