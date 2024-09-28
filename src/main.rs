@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-use chrono::NaiveDate;
+use chrono::{NaiveDate, Datelike};
 use std::env;
 use std::fs::File;
 use std::io::Write;
@@ -66,12 +66,23 @@ fn capitalize_title(title: &str) -> String {
 #[tokio::main]
 async fn main() -> Result<(), AppError> {
     let args: Vec<String> = env::args().collect();
-    let blogs_file = args.get(1).ok_or_else(|| AppError::ParseError("Missing blogs file argument".to_string()))?;
-    let since_date_str = args.get(2).ok_or_else(|| AppError::ParseError("Missing since date argument".to_string()))?;
+    
+    // Set default values
+    let blogs_file = if args.len() > 1 {
+        args[1].clone()
+    } else {
+        "blogs.json".to_string()
+    };
 
-    let blogs = config::read_blogs_from_file(blogs_file)?;
-    let since_date = NaiveDate::parse_from_str(since_date_str, "%Y-%m-%d")?;
+    let since_date = if args.len() > 2 {
+        NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
+    } else {
+        let today = chrono::Local::today();
+        NaiveDate::from_ymd(today.year(), today.month(), 1)
+    };
 
+    let blogs = config::read_blogs_from_file(&blogs_file)?;
+    
     let mut tasks = Vec::new();
 
     for blog in blogs {
