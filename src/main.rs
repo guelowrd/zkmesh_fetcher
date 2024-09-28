@@ -25,7 +25,29 @@ fn capitalize_title(title: &str) -> String {
         let is_preposition_or_conjunction = matches!(word.to_lowercase().as_str(), 
             "and" | "but" | "or" | "for" | "nor" | "so" | "yet" | "to" | "the" | "a" | "an");
 
-        let capitalized_word = if is_first_or_last || word.len() < 4 || !is_preposition_or_conjunction {
+        // Check if the word should be left untouched
+        let is_untouched = word.starts_with('(') || 
+                           (word.chars().all(|c| c.is_uppercase()) && word.len() > 1) || 
+                           word.chars().filter(|c| c.is_uppercase()).count() >= 3;
+
+        // Determine if the previous word ends with a colon
+        let capitalize_next = if i > 0 && words[i - 1].ends_with(':') {
+            true
+        } else {
+            false
+        };
+
+        // Special behavior for "ZKsync" and "AggLayer"
+        let capitalized_word = if word.eq_ignore_ascii_case("zksync") {
+            "ZKsync".to_string() // Always capitalize as "ZKsync"
+        } else if word.eq_ignore_ascii_case("agglayer") {
+            "AggLayer".to_string() // Always capitalize as "AggLayer"
+        } else if word.eq_ignore_ascii_case("agglayer’s") {
+            "AggLayer’s".to_string() // Always capitalize as "AggLayer"
+        } else if is_untouched {
+            // Leave the word untouched
+            word.to_string()
+        } else if capitalize_next || is_first_or_last || word.len() > 3 || !is_preposition_or_conjunction {
             // Capitalize the first letter and lowercase the rest
             let mut c = word.to_lowercase();
             c.get_mut(0..1).map(|s| s.make_ascii_uppercase());
@@ -124,7 +146,7 @@ async fn main() -> Result<(), AppError> {
     html_output.push_str("</body></html>");
 
     // Write the HTML output to a file
-    let mut file = File::create("articles.html")?;
+    let mut file = File::create("output.html")?;
     file.write_all(html_output.as_bytes())?;
 
     Ok(())
