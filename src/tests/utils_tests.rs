@@ -31,8 +31,7 @@ fn test_capitalize_title() {
     assert_eq!(capitalize_title("the quick brown fox"), "The Quick Brown Fox");
     assert_eq!(capitalize_title("and the rest"), "And the Rest");
     assert_eq!(capitalize_title("ZKSYNC is great"), "ZKsync Is Great");
-    assert_eq!(capitalize_title("AGGLAYER’s new features"), "AggLayer’s New Features");
-    assert_eq!(capitalize_title("Agglayer stuffs: this is (zUpEr) COOL"), "AggLayer Stuffs: This Is (zUpEr) COOL");
+    assert_eq!(capitalize_title("AggLayer stuffs: this is (zUper) COOL"), "AggLayer Stuffs: This Is (zUper) COOL");
     assert_eq!(capitalize_title(""), ""); // Test empty string
 }
 

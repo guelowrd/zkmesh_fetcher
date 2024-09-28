@@ -33,7 +33,8 @@ pub fn capitalize_title(title: &str) -> String {
 
         let is_untouched = word.starts_with('(') || 
                            (word.chars().all(|c| c.is_uppercase()) && word.len() > 1) || 
-                           word.chars().filter(|c| c.is_uppercase()).count() >= 3;
+                           word.chars().filter(|c| c.is_uppercase()).count() > 2 ||
+                           (word.chars().filter(|c| c.is_uppercase()).count() > 1 && word.len() > 2);
 
         let capitalize_next = if i > 0 && words[i - 1].ends_with(':') {
             true
@@ -43,10 +44,6 @@ pub fn capitalize_title(title: &str) -> String {
 
         let capitalized_word = if word.eq_ignore_ascii_case("zksync") {
             "ZKsync".to_string()
-        } else if word.eq_ignore_ascii_case("agglayer") {
-            "AggLayer".to_string()
-        } else if word.eq_ignore_ascii_case("agglayer’s") {
-            "AggLayer’s".to_string()
         } else if is_untouched {
             word.to_string()
         } else if capitalize_next || is_first_or_last || word.len() > 3 || !is_preposition_or_conjunction {
