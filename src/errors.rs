@@ -26,7 +26,7 @@ impl fmt::Display for AppError {
             AppError::IoError(e) => write!(f, "IO error: {}", e),
             AppError::UnknownFeedType(t) => write!(f, "Unknown feed type: {}", t),
             AppError::AsyncRuntimeError(e) => write!(f, "Async runtime error: {}", e),
-            AppError::XmlError(e) => write!(f, "XML error: {}", e), // Add this line
+            AppError::XmlError(e) => write!(f, "XML error: {}", e), 
         }
     }
 }

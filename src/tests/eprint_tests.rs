@@ -55,7 +55,6 @@ async fn test_fetch_eprint_articles() {
               <dc:title>Another</dc:title> 
               <dc:creator>Author 1</dc:creator>
               <dc:creator>Author 2</dc:creator>
-              <dc:creator>Author 3</dc:creator>
               <dc:date>2024-09-19T02:36:04Z</dc:date>
               <dc:description>Something STARK related</dc:description> 
             </oai_dc:dc>
@@ -88,5 +87,79 @@ async fn test_fetch_eprint_articles() {
     assert_eq!(articles[1].title, "Another");
     assert_eq!(articles[1].url, "https://eprint.iacr.org/2024/9999");
     assert_eq!(articles[1].blog_name, "Eprint");
-    assert_eq!(articles[1].authors, Some("Author 1, Author 2 and Author 3".to_string()));
+    assert_eq!(articles[1].authors, Some("Author 1 and Author 2".to_string()));
+}
+
+#[tokio::test]
+async fn test_fetch_eprint_articles_with_filtering() {
+    let mock_response = r#"
+    <?xml version="1.0" encoding="UTF-8"?> 
+    <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+      <ListRecords>
+        <record> 
+          <header>
+            <identifier>oai:eprint.iacr.org:2024/1431</identifier> 
+            <datestamp>2024-09-18T07:46:25Z</datestamp>
+          </header>
+          <metadata>
+            <oai_dc:dc>
+              <dc:title>Test Title</dc:title> 
+              <dc:identifier>https://eprint.iacr.org/2024/1431</dc:identifier>              
+              <dc:creator>Dan Boneh</dc:creator>
+              <dc:date>2024-09-18T07:46:25Z</dc:date>
+              <dc:description>This paper discusses zero-knowledge proofs.</dc:description> 
+            </oai_dc:dc>
+          </metadata>
+        </record>
+        <record> 
+          <header>
+            <identifier>oai:eprint.iacr.org:2024/9999</identifier> 
+            <datestamp>2024-09-19T02:36:04Z</datestamp>
+          </header>
+          <metadata>
+            <oai_dc:dc>
+              <dc:title>Another Title</dc:title> 
+              <dc:identifier>https://eprint.iacr.org/2024/9999</dc:identifier>     
+              <dc:creator>Some Author</dc:creator>
+              <dc:date>2024-09-19T02:36:04Z</dc:date>
+              <dc:description>This paper discusses unrelated topics.</dc:description> 
+            </oai_dc:dc>
+          </metadata>
+        </record>
+        <record> 
+          <header>
+            <identifier>oai:eprint.iacr.org:2024/1234</identifier> 
+            <datestamp>2024-09-19T02:36:04Z</datestamp>
+          </header>
+          <metadata>
+            <oai_dc:dc>
+              <dc:title>Another Title</dc:title> 
+              <dc:identifier>https://eprint.iacr.org/2024/9999</dc:identifier>     
+              <dc:creator>Some Author</dc:creator>
+              <dc:date>2024-06-19T02:36:04Z</dc:date>
+              <dc:date>2024-09-19T02:36:04Z</dc:date>
+              <dc:description>This paper discusses ZK but it's an old one, just recently updated.</dc:description> 
+            </oai_dc:dc>
+          </metadata>
+        </record>        
+      </ListRecords>
+    </OAI-PMH>
+    "#;
+
+    let _m = mock("GET", "/")
+        .with_status(200)
+        .with_header("content-type", "application/xml")
+        .with_body(mock_response)
+        .create();
+
+    let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
+    let fetcher = EprintFetcher;
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestEprintBlog")
+        .await
+        .expect("Failed to fetch Eprint articles");
+
+    assert_eq!(articles.len(), 1); // Only one article should be included
+    assert_eq!(articles[0].title, "Test Title");
+    assert_eq!(articles[0].url, "https://eprint.iacr.org/2024/1431");
+    assert_eq!(articles[0].authors, Some("Dan Boneh".to_string()));
 }

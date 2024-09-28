@@ -1,93 +1,33 @@
 #[cfg(test)]
 mod tests;
-
-use chrono::{NaiveDate, Datelike};
-use std::env;
-use std::fs::File;
-use std::io::Write;
-use tokio;
-
 mod feed_types;
 mod errors;
 mod utils;
 mod config;
 mod models;
 
+use chrono::NaiveDate;
+use tokio;
 use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher, CustomHtmlFetcher, EprintFetcher};
 use errors::AppError;
-
-fn capitalize_title(title: &str) -> String {
-    let words = title.split_whitespace().collect::<Vec<&str>>();
-    let mut capitalized_title = Vec::new();
-
-    for (i, &word) in words.iter().enumerate() {
-        let is_first_or_last = i == 0 || i == words.len() - 1;
-        let is_preposition_or_conjunction = matches!(word.to_lowercase().as_str(), 
-            "and" | "but" | "or" | "for" | "nor" | "so" | "yet" | "to" | "the" | "a" | "an");
-
-        // Check if the word should be left untouched
-        let is_untouched = word.starts_with('(') || 
-                           (word.chars().all(|c| c.is_uppercase()) && word.len() > 1) || 
-                           word.chars().filter(|c| c.is_uppercase()).count() >= 3;
-
-        // Determine if the previous word ends with a colon
-        let capitalize_next = if i > 0 && words[i - 1].ends_with(':') {
-            true
-        } else {
-            false
-        };
-
-        // Special behavior for "ZKsync" and "AggLayer"
-        let capitalized_word = if word.eq_ignore_ascii_case("zksync") {
-            "ZKsync".to_string() // Always capitalize as "ZKsync"
-        } else if word.eq_ignore_ascii_case("agglayer") {
-            "AggLayer".to_string() // Always capitalize as "AggLayer"
-        } else if word.eq_ignore_ascii_case("agglayer’s") {
-            "AggLayer’s".to_string() // Always capitalize as "AggLayer"
-        } else if is_untouched {
-            // Leave the word untouched
-            word.to_string()
-        } else if capitalize_next || is_first_or_last || word.len() > 3 || !is_preposition_or_conjunction {
-            // Capitalize the first letter and lowercase the rest
-            let mut c = word.to_lowercase();
-            c.get_mut(0..1).map(|s| s.make_ascii_uppercase());
-            c
-        } else {
-            // Lowercase the word
-            word.to_lowercase()
-        };
-
-        capitalized_title.push(capitalized_word);
-    }
-
-    capitalized_title.join(" ")
-}
+use crate::models::{BlogInfo, BlogArticle};
+use crate::utils::{capitalize_title, parse_args, write_output};
 
 #[tokio::main]
 async fn main() -> Result<(), AppError> {
-    let args: Vec<String> = env::args().collect();
-    
-    // Set default values
-    let blogs_file = if args.len() > 1 {
-        args[1].clone()
-    } else {
-        "blogs.json".to_string()
-    };
-
-    let since_date = if args.len() > 2 {
-        NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
-    } else {
-        let today = chrono::Local::now();
-        NaiveDate::from_ymd_opt(today.year(), today.month(), 1)
-            .expect("Invalid date provided")
-    };
-
+    let (blogs_file, since_date) = parse_args()?;
     let blogs = config::read_blogs_from_file(&blogs_file)?;
-    
-    let mut tasks = Vec::new();
-    let mut errors = Vec::new(); // To capture errors
+    let (eprint_articles, other_articles, errors) = fetch_articles(&blogs, &since_date).await?;
+    let html_output = generate_html_output(eprint_articles, other_articles, errors, since_date, &blogs).await?; 
+    write_output(&html_output)?;
+    Ok(())
+}
 
-    for blog in &blogs { // Iterate over a reference to blogs
+async fn fetch_articles(blogs: &[BlogInfo], since_date: &NaiveDate) -> Result<(Vec<BlogArticle>, Vec<BlogArticle>, Vec<(String, String)>), AppError> {
+    let mut tasks = Vec::new();
+    let mut errors = Vec::new();
+
+    for blog in blogs {
         let fetcher: Box<dyn ArticleFetcher> = match blog.feed_type {
             FeedType::Substack => Box::new(SubstackFetcher),
             FeedType::RSS => Box::new(RssFetcher),
@@ -107,11 +47,12 @@ async fn main() -> Result<(), AppError> {
             FeedType::Eprint => Box::new(EprintFetcher),
         };
 
-        let blog_clone = blog.clone(); // Clone the blog to use in the async block
+        let blog_clone = blog.clone();
+        let since_date_clone = since_date.clone(); // Clone the since_date
         let task = tokio::spawn(async move {
-            fetcher.fetch_articles(&blog_clone.domain, &since_date, &blog_clone.name).await
+            fetcher.fetch_articles(&blog_clone.domain, &since_date_clone, &blog_clone.name).await
         });
-        tasks.push((task, blog.name.clone())); // Store the blog name with the task
+        tasks.push((task, blog.name.clone()));
     }
 
     let mut eprint_articles = Vec::new();
@@ -129,38 +70,47 @@ async fn main() -> Result<(), AppError> {
                 }
             }
             Ok(Err(e)) => {
-                errors.push((blog_name, e.to_string())); // Capture the error with the blog name
+                errors.push((blog_name, e.to_string()));
             }
             Err(e) => {
-                errors.push((blog_name, e.to_string())); // Capture the error with the blog name
+                errors.push((blog_name, e.to_string()));
             }
         }
     }
 
-    // Sort both lists by date in ascending order
+    // Sort articles by date
     eprint_articles.sort_by(|a, b| a.date.cmp(&b.date));
     other_articles.sort_by(|a, b| a.date.cmp(&b.date));
 
-    // Create HTML output
+    Ok((eprint_articles, other_articles, errors))
+}
+
+async fn generate_html_output(
+    eprint_articles: Vec<BlogArticle>, 
+    other_articles: Vec<BlogArticle>, 
+    errors: Vec<(String, String)>, 
+    since_date: NaiveDate, 
+    blogs: &[BlogInfo] 
+) -> Result<String, AppError> {
     let mut html_output = String::from("<html><body>");
 
-    // Add header for Eprint papers
+    // Add Eprint articles
     if !eprint_articles.is_empty() {
         html_output.push_str("<h2>Eprint Papers</h2><ul>");
         for article in eprint_articles {
             let authors_or_blog_name = article.authors.clone().unwrap_or_else(|| "Unknown Author".to_string());
-            let capitalized_title = capitalize_title(&article.title); 
+            let capitalized_title = capitalize_title(&article.title);
             html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
         }
         html_output.push_str("</ul>");
     }
 
-    // Add header for Blog articles
+    // Add other articles
     if !other_articles.is_empty() {
         html_output.push_str("<h2>Blog Articles</h2><ul>");
         for article in other_articles {
             let authors_or_blog_name = article.blog_name.clone();
-            let capitalized_title = capitalize_title(&article.title); 
+            let capitalized_title = capitalize_title(&article.title);
             html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
         }
         html_output.push_str("</ul>");
@@ -174,7 +124,7 @@ async fn main() -> Result<(), AppError> {
 
     // Add list of blogs
     html_output.push_str("<h3>List of Blogs:</h3><ul>");
-    for blog in &blogs { // Iterate over a reference to blogs
+    for blog in blogs { 
         html_output.push_str(&format!("<li><a href=\"{}\">{}</a></li>", blog.domain, blog.name));
     }
     html_output.push_str("</ul>");
@@ -189,15 +139,7 @@ async fn main() -> Result<(), AppError> {
     }
 
     html_output.push_str("</body></html>");
-
-    // Ensure the output directory exists
-    std::fs::create_dir_all("./output")?;
-
-    // Write the HTML output to a file
-    let mut file = File::create("./output/index.html")?;
-    file.write_all(html_output.as_bytes())?;
-
-    Ok(())
+    Ok(html_output)
 }
 
 #[cfg(test)]

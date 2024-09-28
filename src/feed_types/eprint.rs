@@ -24,7 +24,6 @@ pub struct EprintFetcher;
 impl EprintFetcher {
     fn format_creators(mut creators: Vec<String>) -> String {
         match creators.len() {
-            0 => String::new(),
             1 => creators[0].clone(),
             2 => format!("{} and {}", creators[0], creators[1]),
             _ => {

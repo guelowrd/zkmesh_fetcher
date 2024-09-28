@@ -10,7 +10,7 @@ use std::io::Write;
 #[test]
 fn test_app_error_display() {
 
-    //TODO: AppError::NetworkError
+    //TODO: AppError::NetworkError, AppError::AsyncRuntimeError, AppError::XmlError
 
     let parse_error = AppError::ParseError("Invalid format".to_string());
     assert_eq!(parse_error.to_string(), "Parse error: Invalid format");
