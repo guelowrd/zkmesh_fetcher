@@ -83,8 +83,10 @@ async fn test_fetch_eprint_articles() {
     assert_eq!(articles.len(), 2);
     assert_eq!(articles[0].title, "Interactive Line-Point Zero-Knowledge with Sublinear Communication and Linear Computation");
     assert_eq!(articles[0].url, "https://eprint.iacr.org/2024/1431");
-    assert_eq!(articles[0].blog_name, "Fuchun Lin, Chaoping Xing and Yizhou Yao");
+    assert_eq!(articles[0].blog_name, "Eprint");
+    assert_eq!(articles[0].authors, Some("Fuchun Lin, Chaoping Xing and Yizhou Yao".to_string()));
     assert_eq!(articles[1].title, "Another");
     assert_eq!(articles[1].url, "https://eprint.iacr.org/2024/9999");
-    assert_eq!(articles[1].blog_name, "Author 1, Author 2 and Author 3");
+    assert_eq!(articles[1].blog_name, "Eprint");
+    assert_eq!(articles[1].authors, Some("Author 1, Author 2 and Author 3".to_string()));
 }
