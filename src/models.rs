@@ -2,7 +2,7 @@ use crate::feed_types::FeedType;
 use chrono::NaiveDate;
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlogInfo {
     pub name: String,
     pub domain: String,

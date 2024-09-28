@@ -77,16 +77,17 @@ async fn main() -> Result<(), AppError> {
     let since_date = if args.len() > 2 {
         NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
     } else {
-        let today = chrono::Local::now(); // Use now() instead of today()
-        NaiveDate::from_ymd_opt(today.year(), today.month(), 1) // Use from_ymd_opt() instead of from_ymd()
-            .expect("Invalid date provided") // Handle the case where the date is invalid
+        let today = chrono::Local::now();
+        NaiveDate::from_ymd_opt(today.year(), today.month(), 1)
+            .expect("Invalid date provided")
     };
 
     let blogs = config::read_blogs_from_file(&blogs_file)?;
     
     let mut tasks = Vec::new();
+    let mut errors = Vec::new(); // To capture errors
 
-    for blog in blogs {
+    for blog in &blogs { // Iterate over a reference to blogs
         let fetcher: Box<dyn ArticleFetcher> = match blog.feed_type {
             FeedType::Substack => Box::new(SubstackFetcher),
             FeedType::RSS => Box::new(RssFetcher),
@@ -106,22 +107,32 @@ async fn main() -> Result<(), AppError> {
             FeedType::Eprint => Box::new(EprintFetcher),
         };
 
+        let blog_clone = blog.clone(); // Clone the blog to use in the async block
         let task = tokio::spawn(async move {
-            fetcher.fetch_articles(&blog.domain, &since_date, &blog.name).await
+            fetcher.fetch_articles(&blog_clone.domain, &since_date, &blog_clone.name).await
         });
-        tasks.push(task);
+        tasks.push((task, blog.name.clone())); // Store the blog name with the task
     }
 
     let mut eprint_articles = Vec::new();
     let mut other_articles = Vec::new();
 
-    for task in tasks {
-        let articles = task.await??;
-        for article in articles {
-            if article.blog_name == "Eprint" {
-                eprint_articles.push(article);
-            } else {
-                other_articles.push(article);
+    for (task, blog_name) in tasks {
+        match task.await {
+            Ok(Ok(articles)) => {
+                for article in articles {
+                    if article.blog_name == "Eprint" {
+                        eprint_articles.push(article);
+                    } else {
+                        other_articles.push(article);
+                    }
+                }
+            }
+            Ok(Err(e)) => {
+                errors.push((blog_name, e.to_string())); // Capture the error with the blog name
+            }
+            Err(e) => {
+                errors.push((blog_name, e.to_string())); // Capture the error with the blog name
             }
         }
     }
@@ -151,6 +162,26 @@ async fn main() -> Result<(), AppError> {
             let authors_or_blog_name = article.blog_name.clone();
             let capitalized_title = capitalize_title(&article.title); 
             html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
+        }
+        html_output.push_str("</ul>");
+    }
+
+    // Add fetching information
+    let run_date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    html_output.push_str(&format!("<h2>Fetching articles/papers published after {}, process ran on {}</h2>", since_date, run_date));
+
+    // Add list of blogs
+    html_output.push_str("<h3>Blogs:</h3><ul>");
+    for blog in &blogs { // Iterate over a reference to blogs
+        html_output.push_str(&format!("<li><a href=\"{}\">{}</a></li>", blog.domain, blog.name));
+    }
+    html_output.push_str("</ul>");
+
+    // Add errors if any
+    if !errors.is_empty() {
+        html_output.push_str("<h3>Errors:</h3><ul>");
+        for (blog_name, error) in errors {
+            html_output.push_str(&format!("<li><strong>{}</strong>: {}</li>", blog_name, error));
         }
         html_output.push_str("</ul>");
     }
