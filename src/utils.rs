@@ -68,7 +68,7 @@ pub fn parse_args() -> Result<(String, NaiveDate), AppError> {
     let blogs_file = if args.len() > 1 {
         args[1].clone()
     } else {
-        "blogs.json".to_string()
+        "./config/blogs.json".to_string()
     };
 
     let since_date = if args.len() > 2 {
