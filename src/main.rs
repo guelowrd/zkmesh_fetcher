@@ -145,8 +145,11 @@ async fn main() -> Result<(), AppError> {
 
     html_output.push_str("</body></html>");
 
+    // Ensure the output directory exists
+    std::fs::create_dir_all("./output")?;
+
     // Write the HTML output to a file
-    let mut file = File::create("output.html")?;
+    let mut file = File::create("./output/index.html")?;
     file.write_all(html_output.as_bytes())?;
 
     Ok(())

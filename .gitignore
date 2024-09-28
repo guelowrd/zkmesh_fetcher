@@ -1,6 +1,6 @@
-/target
+/target/
 *_output.json
 *_output.xml
 *_output.html
-output.html
 backup_blogs.json
+/output/
