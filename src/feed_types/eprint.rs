@@ -77,11 +77,14 @@ impl ArticleFetcher for EprintFetcher {
         while let Ok(event) = reader.read_event() {
             match event {
                 Event::Start(ref e) => {
-                    current_element = str::from_utf8(e.name().as_ref()).unwrap().to_string();
+                    current_element = str::from_utf8(e.name().as_ref())
+                        .expect("Failed to convert element name to string") // Handle potential UTF-8 conversion error
+                        .to_string(); // Convert &str to String
                     // println!("Start Element: {}", current_element); // Debugging output
                 }
                 Event::Text(e) => {
-                    let text = e.unescape().unwrap().to_string();
+                    let text = e.unescape()
+                        .expect("Failed to unescape XML text"); // Handle potential unescape error
                     // println!("Text for {}: {}", current_element, text); // Debugging output
                     if !text.trim().is_empty() { // Only assign if text is not empty
                         match current_element.as_str() {

@@ -77,8 +77,9 @@ async fn main() -> Result<(), AppError> {
     let since_date = if args.len() > 2 {
         NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
     } else {
-        let today = chrono::Local::today();
-        NaiveDate::from_ymd(today.year(), today.month(), 1)
+        let today = chrono::Local::now(); // Use now() instead of today()
+        NaiveDate::from_ymd_opt(today.year(), today.month(), 1) // Use from_ymd_opt() instead of from_ymd()
+            .expect("Invalid date provided") // Handle the case where the date is invalid
     };
 
     let blogs = config::read_blogs_from_file(&blogs_file)?;
