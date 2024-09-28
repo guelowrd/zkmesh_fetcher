@@ -126,7 +126,7 @@ async fn main() -> Result<(), AppError> {
         html_output.push_str("<h2>Eprint Papers</h2><ul>");
         for article in eprint_articles {
             let authors_or_blog_name = article.authors.clone().unwrap_or_else(|| "Unknown Author".to_string());
-            let capitalized_title = capitalize_title(&article.title); // Capitalize the title
+            let capitalized_title = capitalize_title(&article.title); 
             html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
         }
         html_output.push_str("</ul>");
@@ -137,7 +137,7 @@ async fn main() -> Result<(), AppError> {
         html_output.push_str("<h2>Blog Articles</h2><ul>");
         for article in other_articles {
             let authors_or_blog_name = article.blog_name.clone();
-            let capitalized_title = capitalize_title(&article.title); // Capitalize the title
+            let capitalized_title = capitalize_title(&article.title); 
             html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
         }
         html_output.push_str("</ul>");

@@ -67,7 +67,31 @@ impl ArticleFetcher for CustomHtmlFetcher {
                 .value().attr("href")
                 .ok_or_else(|| AppError::ParseError("Missing href attribute".to_string()))?
                 .to_string();
-            let url = if url.starts_with("http") { url } else { format!("{}{}", feed_url, url) };
+
+            // Ensure the URL is correctly formatted
+            let url = if url.starts_with("http") {
+                url // It's already a full URL
+            } else {
+                // Remove any leading slashes from the relative URL
+                let trimmed_url = url.trim_start_matches('/');
+                
+                // Remove common subfolder from feed_url
+                let base_url = feed_url.trim_end_matches('/');
+                let common_subfolder = if base_url.ends_with("blog") {
+                    "blog"
+                } else if base_url.ends_with("posts") {
+                    "posts"
+                } else {
+                    "" // No common subfolder
+                };
+
+                // Construct the final URL
+                if !common_subfolder.is_empty() {
+                    format!("{}/{}", base_url.trim_end_matches(&format!("/{}", common_subfolder)), trimmed_url)
+                } else {
+                    format!("{}/{}", base_url, trimmed_url)
+                }
+            };
             // println!("URL: {}", url);
 
             let date_str = article.select(&date_selector).next()
