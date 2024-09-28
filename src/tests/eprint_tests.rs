@@ -60,6 +60,27 @@ async fn test_fetch_eprint_articles() {
             </oai_dc:dc>
           </metadata>
         </record>
+        <record> 
+          <header>
+            <identifier>oai:eprint.iacr.org:2024/666</identifier> 
+            <datestamp>2024-09-19T07:46:25Z</datestamp>
+          </header>
+          <metadata>
+            <oai_dc:dc 
+                xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+                xmlns:dc="http://purl.org/dc/elements/1.1/" 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+                                    http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+              <dc:identifier>https://eprint.iacr.org/2024/666</dc:identifier>
+              <dc:title>Another title</dc:title> 
+              <dc:creator>Solo Author</dc:creator>
+              <dc:date>2024-09-19T02:36:04Z</dc:date>
+              <dc:subject>ZERO-KNOWLEDGE PROOFS</dc:subject> 
+              <dc:description>No mention of keywords here</dc:description> 
+            </oai_dc:dc>
+          </metadata>
+        </record>        
       </ListRecords>
     </OAI-PMH>
     "#;
@@ -79,7 +100,7 @@ async fn test_fetch_eprint_articles() {
         .await
         .expect("Failed to fetch Eprint articles");
 
-    assert_eq!(articles.len(), 2);
+    assert_eq!(articles.len(), 3);
     assert_eq!(articles[0].title, "Interactive Line-Point Zero-Knowledge with Sublinear Communication and Linear Computation");
     assert_eq!(articles[0].url, "https://eprint.iacr.org/2024/1431");
     assert_eq!(articles[0].blog_name, "Eprint");
@@ -88,6 +109,10 @@ async fn test_fetch_eprint_articles() {
     assert_eq!(articles[1].url, "https://eprint.iacr.org/2024/9999");
     assert_eq!(articles[1].blog_name, "Eprint");
     assert_eq!(articles[1].authors, Some("Author 1 and Author 2".to_string()));
+    assert_eq!(articles[2].title, "Another title");
+    assert_eq!(articles[2].url, "https://eprint.iacr.org/2024/666");
+    assert_eq!(articles[2].blog_name, "Eprint");
+    assert_eq!(articles[2].authors, Some("Solo Author".to_string()));    
 }
 
 #[tokio::test]

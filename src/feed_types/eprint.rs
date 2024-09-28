@@ -18,6 +18,7 @@ struct Record {
     creators: Vec<String>,
     dates: Vec<String>,
     description: String,
+    subject: String, 
 }
 
 pub struct EprintFetcher;
@@ -42,17 +43,25 @@ impl EprintFetcher {
 fn should_include_record(record: &Record) -> bool {
     let config = load_eprint_config().expect("Failed to load eprint config");
 
-    // Check if the description contains any of the keywords
+    // Check if the description, title, or subject contains any of the keywords
     let description_contains_keyword = config.keywords.iter().any(|keyword| {
         record.description.to_lowercase().contains(keyword)
     });
 
-    // Check if any of the authors match
-    let authors_match = record.creators.iter().any(|author| {
-        config.authors.iter().any(|name| author.to_lowercase() == name.as_str()) // Use as_str() to compare
+    let title_contains_keyword = config.keywords.iter().any(|keyword| {
+        record.title.to_lowercase().contains(keyword)
     });
 
-    description_contains_keyword || authors_match
+    let subject_contains_keyword = config.keywords.iter().any(|keyword| {
+        record.subject.to_lowercase().contains(keyword)
+    });
+
+    // Check if any of the authors match
+    let authors_match = record.creators.iter().any(|author| {
+        config.authors.iter().any(|name| author.to_lowercase() == name.as_str())
+    });
+
+    description_contains_keyword || title_contains_keyword || subject_contains_keyword || authors_match
 }
 
 #[async_trait]
@@ -73,6 +82,7 @@ impl ArticleFetcher for EprintFetcher {
             creators: Vec::new(),
             dates: Vec::new(),
             description: String::new(),
+            subject: String::new(), 
         };
 
         while let Ok(event) = reader.read_event() {
@@ -92,6 +102,7 @@ impl ArticleFetcher for EprintFetcher {
                             "dc:creator" => record.creators.push(text.trim().to_string()),
                             "dc:date" => record.dates.push(text.trim().to_string()), 
                             "dc:description" => record.description = text.trim().to_string(), 
+                            "dc:subject" => record.subject = text.trim().to_string(), 
                             "datestamp" => record.datestamp = text.trim().to_string(), 
                             _ => {}
                         }
@@ -107,6 +118,7 @@ impl ArticleFetcher for EprintFetcher {
                             creators: Vec::new(),
                             dates: Vec::new(),
                             description: String::new(),
+                            subject: String::new(), 
                         };
                     }
                 }
