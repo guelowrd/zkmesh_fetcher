@@ -84,6 +84,7 @@ impl ArticleFetcher for CustomHtmlFetcher {
                     url,
                     date,
                     blog_name: blog_name.to_string(),
+                    authors: None, // Set authors to None for Custom HTML
                 });
                 // println!("Article added to the list");
             } else {

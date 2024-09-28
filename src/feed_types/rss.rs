@@ -28,6 +28,7 @@ impl ArticleFetcher for RssFetcher {
                     url: link.to_string(),
                     date,
                     blog_name: blog_name.to_string(),
+                    authors: None, // Set authors to None for RSS
                 });
             }
         }

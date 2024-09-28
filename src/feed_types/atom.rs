@@ -29,6 +29,7 @@ impl ArticleFetcher for AtomFetcher {
                     url: link,
                     date,
                     blog_name: blog_name.to_string(),
+                    authors: None, // Set authors to None for Atom
                 });
             }
         }

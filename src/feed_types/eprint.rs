@@ -127,7 +127,8 @@ impl ArticleFetcher for EprintFetcher {
                             title: record.title,
                             url: record.identifier,
                             date,
-                            blog_name: authors,
+                            blog_name: "Eprint".to_string(), 
+                            authors: Some(authors), // Populate authors field
                         });
                     }
                 }

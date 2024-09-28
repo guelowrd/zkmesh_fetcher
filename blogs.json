@@ -1,5 +1,10 @@
 [
   {
+    "name": "Eprint",
+    "domain": "https://eprint.iacr.org/oai?verb=ListRecords&metadataPrefix=oai_dc",
+    "feed_type": "Eprint"
+  },
+  {
     "name": "Gevulot",
     "domain": "https://blog.gevulot.com/api/v1/posts/?limit=50",
     "feed_type": "Substack"
@@ -97,10 +102,5 @@
       "date_selector": "time",  
       "date_format": "%B %d, %Y"
     }
-  },
-  {
-    "name": "Eprint",
-    "domain": "https://eprint.iacr.org/oai?verb=ListRecords&metadataPrefix=oai_dc",
-    "feed_type": "Eprint"
   }
 ]

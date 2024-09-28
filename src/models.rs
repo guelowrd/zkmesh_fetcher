@@ -20,10 +20,11 @@ pub struct CustomSelectors {
     pub date_format: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BlogArticle {
     pub title: String,
     pub url: String,
     pub date: NaiveDate,
     pub blog_name: String,
+    pub authors: Option<String>,
 }

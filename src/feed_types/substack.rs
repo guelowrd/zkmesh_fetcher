@@ -24,7 +24,13 @@ impl ArticleFetcher for SubstackFetcher {
                 let date_str = post["post_date"].as_str().ok_or_else(|| AppError::ParseError("Missing post_date".to_string()))?;
                 let date = NaiveDate::parse_from_str(date_str, "%Y-%m-%dT%H:%M:%S%.fZ")?;
                 if date >= *since_date {
-                    articles.push(BlogArticle { title, url, date, blog_name: blog_name.to_string() });
+                    articles.push(BlogArticle {
+                        title,
+                        url,
+                        date,
+                        blog_name: blog_name.to_string(),
+                        authors: None, // Set authors to None for Substack
+                    });
                 }
             }
         }

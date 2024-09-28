@@ -3,6 +3,8 @@ mod tests;
 
 use chrono::NaiveDate;
 use std::env;
+use std::fs::File;
+use std::io::Write;
 use tokio;
 
 mod feed_types;
@@ -13,6 +15,31 @@ mod models;
 
 use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher, CustomHtmlFetcher, EprintFetcher};
 use errors::AppError;
+
+fn capitalize_title(title: &str) -> String {
+    let words = title.split_whitespace().collect::<Vec<&str>>();
+    let mut capitalized_title = Vec::new();
+
+    for (i, &word) in words.iter().enumerate() {
+        let is_first_or_last = i == 0 || i == words.len() - 1;
+        let is_preposition_or_conjunction = matches!(word.to_lowercase().as_str(), 
+            "and" | "but" | "or" | "for" | "nor" | "so" | "yet" | "to" | "the" | "a" | "an");
+
+        let capitalized_word = if is_first_or_last || word.len() < 4 || !is_preposition_or_conjunction {
+            // Capitalize the first letter and lowercase the rest
+            let mut c = word.to_lowercase();
+            c.get_mut(0..1).map(|s| s.make_ascii_uppercase());
+            c
+        } else {
+            // Lowercase the word
+            word.to_lowercase()
+        };
+
+        capitalized_title.push(capitalized_word);
+    }
+
+    capitalized_title.join(" ")
+}
 
 #[tokio::main]
 async fn main() -> Result<(), AppError> {
@@ -51,12 +78,54 @@ async fn main() -> Result<(), AppError> {
         tasks.push(task);
     }
 
+    let mut eprint_articles = Vec::new();
+    let mut other_articles = Vec::new();
+
     for task in tasks {
         let articles = task.await??;
         for article in articles {
-            println!("[{}]({}) | {} ({})", article.title, article.url, article.blog_name, article.date);
+            if article.blog_name == "Eprint" {
+                eprint_articles.push(article);
+            } else {
+                other_articles.push(article);
+            }
         }
     }
+
+    // Sort both lists by date in ascending order
+    eprint_articles.sort_by(|a, b| a.date.cmp(&b.date));
+    other_articles.sort_by(|a, b| a.date.cmp(&b.date));
+
+    // Create HTML output
+    let mut html_output = String::from("<html><body>");
+
+    // Add header for Eprint papers
+    if !eprint_articles.is_empty() {
+        html_output.push_str("<h2>Eprint Papers</h2><ul>");
+        for article in eprint_articles {
+            let authors_or_blog_name = article.authors.clone().unwrap_or_else(|| "Unknown Author".to_string());
+            let capitalized_title = capitalize_title(&article.title); // Capitalize the title
+            html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
+        }
+        html_output.push_str("</ul>");
+    }
+
+    // Add header for Blog articles
+    if !other_articles.is_empty() {
+        html_output.push_str("<h2>Blog Articles</h2><ul>");
+        for article in other_articles {
+            let authors_or_blog_name = article.blog_name.clone();
+            let capitalized_title = capitalize_title(&article.title); // Capitalize the title
+            html_output.push_str(&format!("<li><a href=\"{}\">{}</a> | {}</li>", article.url, capitalized_title, authors_or_blog_name));
+        }
+        html_output.push_str("</ul>");
+    }
+
+    html_output.push_str("</body></html>");
+
+    // Write the HTML output to a file
+    let mut file = File::create("articles.html")?;
+    file.write_all(html_output.as_bytes())?;
 
     Ok(())
 }
