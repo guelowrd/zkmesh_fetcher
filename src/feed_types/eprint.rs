@@ -28,7 +28,11 @@ impl EprintFetcher {
             1 => creators[0].clone(),
             2 => format!("{} and {}", creators[0], creators[1]),
             _ => {
-                let last = creators.pop().unwrap(); // Remove the last creator
+                let last = if let Some(creator) = creators.pop() {
+                    creator // Remove the last creator safely
+                } else {
+                    return String::new(); // Return an empty string if there are no creators
+                };
                 format!("{} and {}", creators.join(", "), last) // Join the rest with commas and add the last with "and"
             }
         }
@@ -59,7 +63,6 @@ impl ArticleFetcher for EprintFetcher {
         let client = Client::new();
         let response = client.get(feed_url).send().await?;
         let xml: String = response.text().await?;
-        // println!("Fetched XML: {}", xml); // Debugging output
 
         let mut reader = Reader::from_str(&xml);
 
@@ -79,29 +82,25 @@ impl ArticleFetcher for EprintFetcher {
                 Event::Start(ref e) => {
                     current_element = str::from_utf8(e.name().as_ref())
                         .expect("Failed to convert element name to string") // Handle potential UTF-8 conversion error
-                        .to_string(); // Convert &str to String
-                    // println!("Start Element: {}", current_element); // Debugging output
+                        .to_string(); 
                 }
                 Event::Text(e) => {
                     let text = e.unescape()
                         .expect("Failed to unescape XML text"); // Handle potential unescape error
-                    // println!("Text for {}: {}", current_element, text); // Debugging output
                     if !text.trim().is_empty() { // Only assign if text is not empty
                         match current_element.as_str() {
                             "dc:identifier" => record.identifier = text.trim().to_string(),
-                            "dc:title" => record.title = text.trim().to_string(), // Trim whitespace here
-                            "dc:creator" => record.creators.push(text.trim().to_string()), // Trim whitespace here
-                            "dc:date" => record.dates.push(text.trim().to_string()), // Trim whitespace here
-                            "dc:description" => record.description = text.trim().to_string(), // Trim whitespace here
-                            "datestamp" => record.datestamp = text.trim().to_string(), // Trim whitespace here
+                            "dc:title" => record.title = text.trim().to_string(),
+                            "dc:creator" => record.creators.push(text.trim().to_string()),
+                            "dc:date" => record.dates.push(text.trim().to_string()), 
+                            "dc:description" => record.description = text.trim().to_string(), 
+                            "datestamp" => record.datestamp = text.trim().to_string(), 
                             _ => {}
                         }
                     }
                 }
                 Event::End(ref e) => {
-                    // println!("End Element: {:?}", e.name()); // Debugging output
                     if e.name() == QName(b"record") {
-                        // println!("Pushing record: {:?}", record); // Debugging output
                         records.push(record.clone()); // Ensure we clone the record
                         record = Record {
                             datestamp: String::new(),
@@ -125,13 +124,18 @@ impl ArticleFetcher for EprintFetcher {
             if !record.dates.is_empty() {
                 if let Ok(date) = NaiveDate::parse_from_str(&record.dates[0], "%Y-%m-%dT%H:%M:%SZ") {
                     if date >= *since_date && should_include_record(&record) {
-                        let authors = EprintFetcher::format_creators(record.creators); // Format the creators
+                        let creators = record.creators.clone();
+                        let authors = if creators.is_empty() {
+                            None 
+                        } else {
+                            Some(EprintFetcher::format_creators(creators)) 
+                        };
                         articles.push(BlogArticle {
                             title: record.title,
                             url: record.identifier,
                             date,
                             blog_name: "Eprint".to_string(), 
-                            authors: Some(authors), // Populate authors field
+                            authors: authors, 
                         });
                     }
                 }
