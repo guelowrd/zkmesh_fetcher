@@ -1,6 +1,3 @@
-use super::ArticleFetcher;
-use crate::models::BlogArticle;
-use crate::errors::AppError;
 use chrono::NaiveDate;
 use async_trait::async_trait;
 use reqwest::Client;
@@ -8,6 +5,10 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 use quick_xml::name::QName;  
 use std::str;  
+use super::ArticleFetcher;
+use crate::models::BlogArticle;
+use crate::errors::AppError;
+use crate::config::load_eprint_config;
 
 #[derive(Debug, Clone)]
 struct Record {
@@ -39,18 +40,16 @@ impl EprintFetcher {
 }
 
 fn should_include_record(record: &Record) -> bool {
-    // Keywords to check in the description
-    let keywords = ["zero-knowledge", "zero knowledge", "zk", "snark", "stark"];
-    let authors_to_check = ["dan boneh", "alessandro chiesa"];
+    let config = load_eprint_config().expect("Failed to load eprint config");
 
     // Check if the description contains any of the keywords
-    let description_contains_keyword = keywords.iter().any(|&keyword| {
+    let description_contains_keyword = config.keywords.iter().any(|keyword| {
         record.description.to_lowercase().contains(keyword)
     });
 
     // Check if any of the authors match
     let authors_match = record.creators.iter().any(|author| {
-        authors_to_check.iter().any(|&name| author.to_lowercase() == name)
+        config.authors.iter().any(|name| author.to_lowercase() == name.as_str()) // Use as_str() to compare
     });
 
     description_contains_keyword || authors_match

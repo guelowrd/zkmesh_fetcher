@@ -95,6 +95,6 @@ fn test_read_blogs_from_file_invalid_format() {
     assert!(result.is_err());
     if let Err(e) = result {
         assert!(matches!(e, AppError::ParseError(_)));
-        assert!(e.to_string().contains("Failed to parse JSON"));
+        assert!(e.to_string().contains("Failed to parse blogs JSON"));
     }
 }

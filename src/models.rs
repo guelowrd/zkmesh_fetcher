@@ -28,3 +28,9 @@ pub struct BlogArticle {
     pub blog_name: String,
     pub authors: Option<String>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct EprintConfig {
+    pub keywords: Vec<String>,
+    pub authors: Vec<String>,
+}
