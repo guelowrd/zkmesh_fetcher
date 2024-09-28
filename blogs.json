@@ -97,5 +97,10 @@
       "date_selector": "time",  
       "date_format": "%B %d, %Y"
     }
+  },
+  {
+    "name": "Eprint",
+    "domain": "https://eprint.iacr.org/oai?verb=ListRecords&metadataPrefix=oai_dc",
+    "feed_type": "Eprint"
   }
 ]

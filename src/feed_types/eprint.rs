@@ -1,0 +1,139 @@
+use super::ArticleFetcher;
+use crate::models::BlogArticle;
+use crate::errors::AppError;
+use chrono::NaiveDate;
+use async_trait::async_trait;
+use reqwest::Client;
+use quick_xml::events::Event;
+use quick_xml::Reader;
+use quick_xml::name::QName;  
+use std::str;  
+
+#[derive(Debug, Clone)]
+struct Record {
+    datestamp: String,
+    identifier: String,
+    title: String,
+    creators: Vec<String>,
+    dates: Vec<String>,
+    description: String,
+}
+
+pub struct EprintFetcher;
+
+impl EprintFetcher {
+    fn format_creators(mut creators: Vec<String>) -> String {
+        match creators.len() {
+            0 => String::new(),
+            1 => creators[0].clone(),
+            2 => format!("{} and {}", creators[0], creators[1]),
+            _ => {
+                let last = creators.pop().unwrap(); // Remove the last creator
+                format!("{} and {}", creators.join(", "), last) // Join the rest with commas and add the last with "and"
+            }
+        }
+    }
+}
+
+fn should_include_record(record: &Record) -> bool {
+    // Keywords to check in the description
+    let keywords = ["zero-knowledge", "zero knowledge", "zk", "snark", "stark"];
+    let authors_to_check = ["dan boneh", "alessandro chiesa"];
+
+    // Check if the description contains any of the keywords
+    let description_contains_keyword = keywords.iter().any(|&keyword| {
+        record.description.to_lowercase().contains(keyword)
+    });
+
+    // Check if any of the authors match
+    let authors_match = record.creators.iter().any(|author| {
+        authors_to_check.iter().any(|&name| author.to_lowercase() == name)
+    });
+
+    description_contains_keyword || authors_match
+}
+
+#[async_trait]
+impl ArticleFetcher for EprintFetcher {
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, _blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
+        let client = Client::new();
+        let response = client.get(feed_url).send().await?;
+        let xml: String = response.text().await?;
+        // println!("Fetched XML: {}", xml); // Debugging output
+
+        let mut reader = Reader::from_str(&xml);
+
+        let mut current_element = String::new();
+        let mut records: Vec<Record> = Vec::new();
+        let mut record: Record = Record {
+            datestamp: String::new(),
+            identifier: String::new(),
+            title: String::new(),
+            creators: Vec::new(),
+            dates: Vec::new(),
+            description: String::new(),
+        };
+
+        while let Ok(event) = reader.read_event() {
+            match event {
+                Event::Start(ref e) => {
+                    current_element = str::from_utf8(e.name().as_ref()).unwrap().to_string();
+                    // println!("Start Element: {}", current_element); // Debugging output
+                }
+                Event::Text(e) => {
+                    let text = e.unescape().unwrap().to_string();
+                    // println!("Text for {}: {}", current_element, text); // Debugging output
+                    if !text.trim().is_empty() { // Only assign if text is not empty
+                        match current_element.as_str() {
+                            "dc:identifier" => record.identifier = text.trim().to_string(),
+                            "dc:title" => record.title = text.trim().to_string(), // Trim whitespace here
+                            "dc:creator" => record.creators.push(text.trim().to_string()), // Trim whitespace here
+                            "dc:date" => record.dates.push(text.trim().to_string()), // Trim whitespace here
+                            "dc:description" => record.description = text.trim().to_string(), // Trim whitespace here
+                            "datestamp" => record.datestamp = text.trim().to_string(), // Trim whitespace here
+                            _ => {}
+                        }
+                    }
+                }
+                Event::End(ref e) => {
+                    // println!("End Element: {:?}", e.name()); // Debugging output
+                    if e.name() == QName(b"record") {
+                        // println!("Pushing record: {:?}", record); // Debugging output
+                        records.push(record.clone()); // Ensure we clone the record
+                        record = Record {
+                            datestamp: String::new(),
+                            identifier: String::new(),
+                            title: String::new(),
+                            creators: Vec::new(),
+                            dates: Vec::new(),
+                            description: String::new(),
+                        };
+                    }
+                }
+                Event::Eof => break,  // End of file reached, break the loop
+                _ => {}
+            }
+        }
+        
+        // Convert records to BlogArticle
+        let mut articles = Vec::new();
+        for record in records {
+            // Check if the dates vector is not empty before accessing it
+            if !record.dates.is_empty() {
+                if let Ok(date) = NaiveDate::parse_from_str(&record.dates[0], "%Y-%m-%dT%H:%M:%SZ") {
+                    if date >= *since_date && should_include_record(&record) {
+                        let authors = EprintFetcher::format_creators(record.creators); // Format the creators
+                        articles.push(BlogArticle {
+                            title: record.title,
+                            url: record.identifier,
+                            date,
+                            blog_name: authors,
+                        });
+                    }
+                }
+            }
+        }
+
+        Ok(articles)
+    }
+}

@@ -1112,9 +1112,9 @@ dependencies = [
 
 [[package]]
 name = "quick-xml"
-version = "0.36.1"
+version = "0.36.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96a05e2e8efddfa51a84ca47cec303fac86c8541b686d37cac5efc0e094417bc"
+checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
 dependencies = [
  "encoding_rs",
  "memchr",
@@ -2060,6 +2060,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "xml"
+version = "0.8.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ede1c99c55b4b3ad0349018ef0eccbe954ce9c342334410707ee87177fcf2ab4"
+dependencies = [
+ "xml-rs",
+]
+
+[[package]]
+name = "xml-rs"
+version = "0.8.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af4e2e2f7cba5a093896c1e150fbfe177d1883e7448200efb81d40b9d339ef26"
+
+[[package]]
 name = "zerocopy"
 version = "0.7.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2089,6 +2104,7 @@ dependencies = [
  "chrono",
  "futures",
  "mockito",
+ "quick-xml",
  "reqwest",
  "rss",
  "scraper",
@@ -2096,4 +2112,5 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
+ "xml",
 ]

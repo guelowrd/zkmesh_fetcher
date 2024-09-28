@@ -11,7 +11,7 @@ mod utils;
 mod config;
 mod models;
 
-use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher, CustomHtmlFetcher};
+use feed_types::{FeedType, ArticleFetcher, SubstackFetcher, RssFetcher, AtomFetcher, CustomHtmlFetcher, EprintFetcher};
 use errors::AppError;
 
 #[tokio::main]
@@ -42,6 +42,7 @@ async fn main() -> Result<(), AppError> {
                     date_format: custom_selectors.date_format.clone(),
                 })
             },
+            FeedType::Eprint => Box::new(EprintFetcher),
         };
 
         let task = tokio::spawn(async move {
@@ -87,6 +88,7 @@ pub async fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
                     date_format: custom_selectors.date_format.clone(),
                 })
             },
+            FeedType::Eprint => Box::new(EprintFetcher),
         };
 
         let task = tokio::spawn(async move {

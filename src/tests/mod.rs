@@ -7,3 +7,4 @@ mod custom_html_tests;
 mod errors_tests;
 mod utils_tests;
 mod config_tests;
+mod eprint_tests;

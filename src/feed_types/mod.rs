@@ -2,11 +2,13 @@ mod substack;
 mod rss;
 mod atom;
 mod custom_html;
+mod eprint;
 
 pub use substack::SubstackFetcher;
 pub use rss::RssFetcher;
 pub use atom::AtomFetcher;
 pub use custom_html::CustomHtmlFetcher;
+pub use eprint::EprintFetcher;
 
 use chrono::NaiveDate;
 use crate::models::BlogArticle;
@@ -27,6 +29,7 @@ pub enum FeedType {
     RSS,
     Atom,
     CustomHTML,
+    Eprint
 }
 
 impl std::str::FromStr for FeedType {
@@ -38,6 +41,7 @@ impl std::str::FromStr for FeedType {
             "RSS" => Ok(FeedType::RSS),
             "Atom" => Ok(FeedType::Atom),
             "CustomHTML" => Ok(FeedType::CustomHTML),
+            "Eprint" => Ok(FeedType::Eprint),
             _ => Err(AppError::UnknownFeedType(s.to_string())),
         }
     }
