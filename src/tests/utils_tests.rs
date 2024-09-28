@@ -1,8 +1,6 @@
-use crate::utils::{parse_rss_date, capitalize_title, parse_args, write_output};
-use chrono::{NaiveDate, Local};
+use crate::utils::{parse_rss_date, capitalize_title, write_output};
+use chrono::NaiveDate;
 use std::fs::File;
-use tempfile::NamedTempFile;
-use crate::errors::AppError;
 
 #[test]
 fn test_parse_rss_date() {
@@ -40,9 +38,6 @@ fn test_capitalize_title() {
 
 #[test]
 fn test_write_output() {
-    let temp_file = NamedTempFile::new().expect("Failed to create temporary file");
-    let path = temp_file.path().to_str().expect("Failed to get path as string");
-
     let html_content = "<html><body><h1>Test</h1></body></html>";
     let result = write_output(html_content);
     assert!(result.is_ok());
