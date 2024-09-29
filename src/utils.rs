@@ -86,3 +86,15 @@ pub fn write_output(html_output: &str) -> Result<(), AppError> {
     file.write_all(html_output.as_bytes())?;
     Ok(())
 }
+
+pub fn replace_url(original_url: &str, custom_url_replace: Option<&String>) -> String {
+    if let Some(replace) = custom_url_replace {
+        let parts: Vec<&str> = replace.split('>').collect();
+        if parts.len() == 2 {
+            let old_url = parts[0].trim();
+            let new_url = parts[1].trim();
+            return original_url.replace(old_url, new_url); // Replace the erroneous URL part
+        }
+    }
+    original_url.to_string() // Use the original URL if no replacement is specified or format is incorrect
+}

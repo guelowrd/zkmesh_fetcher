@@ -4,6 +4,7 @@ use crate::errors::AppError;
 use chrono::NaiveDate;
 use async_trait::async_trait;
 use scraper::{Html, Selector};
+use crate::utils::replace_url;
 
 pub struct CustomHtmlFetcher {
     pub article_selector: String,
@@ -74,18 +75,7 @@ impl ArticleFetcher for CustomHtmlFetcher {
                 }
             };
 
-            let final_url = if let Some(replace) = &custom_url_replace {
-                let parts: Vec<&str> = replace.split('>').collect();
-                if parts.len() == 2 {
-                    let old_url = parts[0].trim();
-                    let new_url = parts[1].trim();
-                    url.replace(old_url, new_url) // Replace the erroneous URL part
-                } else {
-                    url // If the format is incorrect, use the original URL
-                }
-            } else {
-                url // Use the original URL if no replacement is specified
-            };
+            let final_url = replace_url(&url, custom_url_replace.as_ref());
 
             let date_str = article.select(&date_selector).next()
                 .ok_or_else(|| AppError::ParseError("Missing date".to_string()))?

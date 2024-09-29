@@ -2,7 +2,7 @@ use std::fmt;
 use atom_syndication;
 use rss;
 use tokio;
-use xml; // Add this line
+use xml; 
 
 #[derive(Debug)]
 pub enum AppError {
@@ -12,7 +12,7 @@ pub enum AppError {
     IoError(std::io::Error),
     UnknownFeedType(String),
     AsyncRuntimeError(tokio::task::JoinError),
-    XmlError(xml::reader::Error), // Add this line
+    XmlError(xml::reader::Error), 
 }
 
 impl std::error::Error for AppError {}
@@ -73,7 +73,6 @@ impl From<tokio::task::JoinError> for AppError {
     }
 }
 
-// Implement From for xml::reader::Error
 impl From<xml::reader::Error> for AppError {
     fn from(err: xml::reader::Error) -> Self {
         AppError::XmlError(err)

@@ -5,6 +5,7 @@ use crate::utils::parse_rss_date;
 use chrono::NaiveDate;
 use rss::Channel;
 use async_trait::async_trait;
+use crate::utils::replace_url;
 
 pub struct RssFetcher;
 
@@ -24,18 +25,7 @@ impl ArticleFetcher for RssFetcher {
             let date = parse_rss_date(pub_date)?;
 
             // Handle custom URL replacement
-            let url = if let Some(replace) = &custom_url_replace {
-                let parts: Vec<&str> = replace.split('>').collect();
-                if parts.len() == 2 {
-                    let old_url = parts[0].trim();
-                    let new_url = parts[1].trim();
-                    link.replace(old_url, new_url) // Replace the erroneous URL part
-                } else {
-                    link.to_string() // Convert to String if the format is incorrect
-                }
-            } else {
-                link.to_string() // Convert to String if no replacement is specified
-            };
+            let url = replace_url(link, custom_url_replace.as_ref());
 
             if date >= *since_date {
                 articles.push(BlogArticle {
