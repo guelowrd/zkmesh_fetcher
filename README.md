@@ -2,39 +2,48 @@
 
 zkMesh monthly newsletter sharing the latest in decentralised privacy-preserving technologies, privacy protocol development and zero-knowledge systems – you can check it out and subscribe [here](https://zkmesh.substack.com/).
 
-zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog articles from various sources, including (for now) Substack, RSS, Atom feeds, and custom HTML pages.
+zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog articles from various sources, including (for now) Substack pages, RSS and Atom feeds, custom HTML pages, and ePrint.
 
 ## How it Works
 
-1. **Input**: The program reads a list of blogs from a file (default: `blogs.txt`). Each line in this file contains information about a blog in the format: `BlogName|FeedURL|FeedType`.
+1. **Input**: The program reads a list of blogs from a configuration file (default: `./config/blogs.json`). Each entry in this file should contain information about a blog page.
 
-2. **Feed Types**: The program supports four types of feeds:
+2. **Feed Types**: The program supports five types of feeds:
    - Substack
    - RSS
    - Atom
    - CustomHTML
+   - Eprint
 
 3. **Fetching Articles**: For each blog in the input file, the program:
    - Determines the appropriate fetcher based on the feed type.
    - Fetches articles published since a specified date.
    - Parses the fetched data and extracts relevant information (title, URL, publication date).
 
-4. **Output**: The program prints the fetched articles to the console in a formatted manner.
+4. **ePrint Search**: For ePrint articles, the program:
+   - Loads the ePrint configuration containing keywords and authors of interest.
+   - Parses the ePrint XML feed to extract article metadata (title, authors, description, subject).
+   - Filters articles based on the presence of specified keywords in the title, description, or subjects.
+   - For each matching article, extracts the publication date and ensures it is after the specified date.
+   - Converts the extracted information, including the paper's authors.
+
+5. **Output**: The program generates an HTML output file located at `./output/index.html`, which contains the fetched articles and any errors encountered during the fetching process.
 
 ## Usage
 
 Run the program with the following command:
-`bash
-cargo run <blogs_file> <since_date>
-`
+
+```
+cargo run <blogs_json> <since_date>
+```
 
 - `blogs_file`: Path to the file containing blog information
 - `since_date`: Fetch articles published since this date (format: YYYY-MM-DD)
 
-Both arguments are required. For example:
+Both arguments can take default values (`./config/blogs.json` for blogs_json and first day of the current month for since_date). So this will run:
 
 ```bash
-cargo run blogs.txt 2024-01-01
+cargo run
 ```
 
 ## Code Structure
@@ -48,7 +57,7 @@ cargo run blogs.txt 2024-01-01
 
 ## Testing
 
-The project includes a comprehensive test suite covering various components:
+The project includes a test suite covering various components:
 - Mock server tests for each feed type
 - Error handling tests
 - Utility function tests
