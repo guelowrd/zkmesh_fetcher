@@ -97,7 +97,7 @@ async fn generate_html_output(
 
     // Add Eprint articles
     if !eprint_articles.is_empty() {
-        html_output.push_str("<h2>Eprint Papers</h2><ul>");
+        html_output.push_str("<h2>ePrint Papers</h2><ul>");
         for article in eprint_articles {
             let authors_or_blog_name = article.authors.clone().unwrap_or_else(|| "Unknown Author".to_string());
             let capitalized_title = capitalize_title(&article.title);
