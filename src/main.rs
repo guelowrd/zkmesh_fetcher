@@ -49,8 +49,9 @@ async fn fetch_articles(blogs: &[BlogInfo], since_date: &NaiveDate) -> Result<(V
 
         let blog_clone = blog.clone();
         let since_date_clone = since_date.clone(); // Clone the since_date
+        let custom_url_replace = blog.custom_url_replace.clone(); // Clone the custom_url_replace
         let task = tokio::spawn(async move {
-            fetcher.fetch_articles(&blog_clone.domain, &since_date_clone, &blog_clone.name).await
+            fetcher.fetch_articles(&blog_clone.domain, &since_date_clone, &blog_clone.name, custom_url_replace).await
         });
         tasks.push((task, blog.name.clone()));
     }

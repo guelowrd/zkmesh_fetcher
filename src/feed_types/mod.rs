@@ -18,7 +18,7 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait ArticleFetcher: Send {
-    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str) -> Result<Vec<BlogArticle>, AppError>;
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, blog_name: &str, custom_url_replace: Option<String>) -> Result<Vec<BlogArticle>, AppError>;
 }
 
 use serde::{Serialize, Deserialize};

@@ -7,6 +7,7 @@ pub struct BlogInfo {
     pub name: String,
     pub domain: String,
     pub feed_type: FeedType,
+    pub custom_url_replace: Option<String>,
     pub custom_selectors: Option<CustomSelectors>,
 }
 

@@ -66,7 +66,7 @@ fn should_include_record(record: &Record) -> bool {
 
 #[async_trait]
 impl ArticleFetcher for EprintFetcher {
-    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, _blog_name: &str) -> Result<Vec<BlogArticle>, AppError> {
+    async fn fetch_articles(&self, feed_url: &str, since_date: &NaiveDate, _blog_name: &str, _custom_url_replace: Option<String>) -> Result<Vec<BlogArticle>, AppError> {
         let client = Client::new();
         let response = client.get(feed_url).send().await?;
         let xml: String = response.text().await?;

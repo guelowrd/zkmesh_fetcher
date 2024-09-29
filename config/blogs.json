@@ -22,7 +22,8 @@
   {
     "name": "Vitalik Buterin",
     "domain": "https://vitalik.eth.limo/feed.xml",
-    "feed_type": "RSS"
+    "feed_type": "RSS",
+    "custom_url_replace": "vitalik.ca>vitalik.eth.limo"
   },
   {
     "name": "Zellic",
