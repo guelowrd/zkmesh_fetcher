@@ -31,10 +31,12 @@ pub fn capitalize_title(title: &str) -> String {
         let is_preposition_or_conjunction = matches!(word.to_lowercase().as_str(), 
             "and" | "but" | "or" | "of" | "for" | "nor" | "so" | "yet" | "to" | "the" | "at" | "a" | "an");
 
+        // Update is_untouched condition
         let is_untouched = word.starts_with('(') || 
                            (word.chars().all(|c| c.is_uppercase()) && word.len() > 1) || 
                            word.chars().filter(|c| c.is_uppercase()).count() > 2 ||
-                           (word.chars().filter(|c| c.is_uppercase()).count() > 1 && word.len() > 2);
+                           (word.chars().filter(|c| c.is_uppercase()).count() > 1 && word.len() > 2) ||
+                           word.chars().filter(|c| c.is_digit(10)).count() > 3; 
 
         let capitalize_next = if i > 0 && words[i - 1].ends_with(':') {
             true
