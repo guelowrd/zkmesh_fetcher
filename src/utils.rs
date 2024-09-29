@@ -36,7 +36,7 @@ pub fn capitalize_title(title: &str) -> String {
                            (word.chars().all(|c| c.is_uppercase()) && word.len() > 1) || 
                            word.chars().filter(|c| c.is_uppercase()).count() > 2 ||
                            (word.chars().filter(|c| c.is_uppercase()).count() > 1 && word.len() > 2) ||
-                           word.chars().filter(|c| c.is_digit(10)).count() > 3; 
+                           word.chars().filter(|c| c.is_digit(10)).count() > 1; 
 
         let capitalize_next = if i > 0 && words[i - 1].ends_with(':') {
             true
