@@ -36,7 +36,7 @@ async fn test_fetch_custom_html_articles() {
         date_format: "%B %d, %Y".to_string()
     };
 
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestPolygonBlog")
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestPolygonBlog", None)
         .await
         .expect("Failed to fetch articles");
 

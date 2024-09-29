@@ -174,7 +174,7 @@ pub async fn run_with_args(args: Vec<String>) -> Result<(), AppError> {
         };
 
         let task = tokio::spawn(async move {
-            fetcher.fetch_articles(&blog.domain, &since_date, &blog.name).await
+            fetcher.fetch_articles(&blog.domain, &since_date, &blog.name, blog.custom_url_replace).await
         });
         tasks.push(task);
     }

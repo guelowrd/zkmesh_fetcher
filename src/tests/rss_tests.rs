@@ -33,7 +33,7 @@ async fn test_fetch_rss_blog_articles() {
     let fetcher = RssFetcher;
 
     // Call the function under test with the mock server URL
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestRSSBlog")
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestRSSBlog", None)
         .await
         .expect("Failed to fetch RSS articles");
 

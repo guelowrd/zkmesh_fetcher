@@ -26,7 +26,7 @@ async fn test_fetch_atom_articles() {
 
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
     let fetcher = AtomFetcher;
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestAtomBlog")
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestAtomBlog", None)
         .await
         .expect("Failed to fetch articles");
 

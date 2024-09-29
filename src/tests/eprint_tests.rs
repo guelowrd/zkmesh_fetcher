@@ -96,7 +96,7 @@ async fn test_fetch_eprint_articles() {
         .expect("Invalid date provided"); // Handle the case where the date is invalid
 
     let fetcher = EprintFetcher;
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestEprintBlog")
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestEprintBlog", None)
         .await
         .expect("Failed to fetch Eprint articles");
 
@@ -179,7 +179,7 @@ async fn test_fetch_eprint_articles_with_filtering() {
 
     let since_date = NaiveDate::from_ymd_opt(2024, 9, 1).unwrap();
     let fetcher = EprintFetcher;
-    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestEprintBlog")
+    let articles = fetcher.fetch_articles(&mockito::server_url(), &since_date, "TestEprintBlog", None)
         .await
         .expect("Failed to fetch Eprint articles");
 

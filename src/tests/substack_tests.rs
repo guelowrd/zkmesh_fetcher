@@ -30,7 +30,7 @@ async fn test_fetch_substack_blog_articles() {
 
     // Call the function under test with the mock server URL
     let mock_url = mockito::server_url();
-    let articles = fetcher.fetch_articles(&mock_url, &since_date, "TestBlog")
+    let articles = fetcher.fetch_articles(&mock_url, &since_date, "TestBlog", None)
         .await
         .expect("Failed to fetch Substack articles");
 
