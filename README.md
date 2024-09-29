@@ -24,6 +24,7 @@ zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog article
    - Loads the ePrint configuration containing keywords and authors of interest.
    - Parses the ePrint XML feed to extract article metadata (title, authors, description, subject).
    - Filters articles based on the presence of specified keywords in the title, description, or subjects.
+   - This filtering is configurable through the `./config/eprint_search.json` file.
    - For each matching article, extracts the publication date and ensures it is after the specified date.
    - Converts the extracted information, including the paper's authors.
 
@@ -37,19 +38,16 @@ Run the program with the following command:
 cargo run <blogs_json> <since_date>
 ```
 
-- `blogs_file`: Path to the file containing blog information
+- `blogs_json`: Path to the file containing blog information
 - `since_date`: Fetch articles published since this date (format: YYYY-MM-DD)
 
-Both arguments can take default values (`./config/blogs.json` for blogs_json and first day of the current month for since_date). So this will run:
-
-```bash
-cargo run
-```
+Both arguments can take default values (`./config/blogs.json` for `blogs_json` and first day of the current month for `since_date`). So a simple `cargo run` will work just fine too
 
 ## Code Structure
 
 - `main.rs`: Contains the main program logic and CLI interface.
 - `feed_types/`: Module containing implementations for different feed types.
+- `tests/`: Folder containing a test suite for the application.
 - `errors.rs`: Custom error types for the application.
 - `utils.rs`: Utility functions for parsing dates and reading blog information.
 - `config.rs`: Functions for reading blog configurations from a file.
@@ -63,9 +61,9 @@ The project includes a test suite covering various components:
 - Utility function tests
 
 Run the tests using:
-`bash
+```bash
 cargo test
-`
+```
 
 ## License
 
