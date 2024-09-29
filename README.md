@@ -6,14 +6,14 @@ zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog article
 
 ## How it Works
 
-1. **Input**: The program reads a list of blogs from a configuration file (default: `./config/blogs.json`). Each entry in this file should contain information about a blog page.
+1. **Input**: The program reads a list of blogs from a configuration file (default: `./config/blogs.json`). Each entry in this file should contain information about a blog / feed.
 
 2. **Feed Types**: The program supports five types of feeds:
    - Substack
    - RSS
    - Atom
    - CustomHTML
-   - Eprint
+   - ePrint
 
 3. **Fetching Articles**: For each blog in the input file, the program:
    - Determines the appropriate fetcher based on the feed type.
