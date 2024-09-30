@@ -36,7 +36,7 @@
     "feed_type": "RSS"
   },
   {
-    "name": "zkSync",
+    "name": "ZKsync",
     "domain": "https://zksync.mirror.xyz/feed/atom",
     "feed_type": "Atom"
   },
