@@ -7,7 +7,7 @@
   {
     "name": "Aleo",
     "domain": "https://medium.com/feed/@aleohq",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Aligned Layer",
@@ -17,7 +17,7 @@
   {
     "name": "Avail",
     "domain": "https://blog.availproject.org/rss/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Aztec",
@@ -35,12 +35,12 @@
   {
     "name": "Brevis",
     "domain": "https://blog.brevis.network/feed/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Citrea",
     "domain": "https://www.blog.citrea.xyz/rss/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Delphinus Labs",
@@ -50,27 +50,27 @@
   {
     "name": "EigenLayer",
     "domain": "https://www.blog.eigenlayer.xyz/rss/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Espresso Systems",
     "domain": "https://medium.com/feed/@espressosys",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Ethereum Foundation",
     "domain": "https://blog.ethereum.org/en/feed.xml",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Fhenix",
     "domain": "https://www.fhenix.io/feed/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Filecoin",
     "domain": "https://filecoin.io/blog/index.xml",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Gevulot",
@@ -80,7 +80,7 @@
   {
     "name": "Holonym",
     "domain": "https://medium.com/feed/holonym",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Hylé",
@@ -95,12 +95,12 @@
   {
     "name": "Kakarot",
     "domain": "https://blog.kakarot.org/feed",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Lagrange",
     "domain": "https://medium.com/feed/@lagrangelabs",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Lambda Class",
@@ -110,27 +110,27 @@
   {
     "name": "Mina",
     "domain": "https://minaprotocol.com/feed/atom",
-    "feedtype": "Atom"
+    "feed_type": "Atom"
   },
   {
     "name": "Nebra",
     "domain": "https://blog.nebra.one/rss/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Ola",
     "domain": "https://medium.com/feed/@ola_zkzkvm",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Ora (HyperOracle)",
     "domain": "https://mirror.xyz/orablog.eth/feed/atom",
-    "feedtype": "Atom"
+    "feed_type": "Atom"
   },
   {
     "name": "Orbiter",
     "domain": "https://medium.com/feed/@orbiter-finance",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Polygon",
@@ -148,12 +148,12 @@
   {
     "name": "Privacy and Scaling Explorations (PSE)",
     "domain": "https://mirror.xyz/privacy-scaling-explorations.eth/feed/atom",
-    "feedtype": "Atom"
+    "feed_type": "Atom"
   },
   {
     "name": "Rarimo",
     "domain": "https://mirror.xyz/0x90699B5A52BccbdFe73d5c9F3d039a33fb2D1AF6/feed/atom",
-    "feedtype": "Atom"
+    "feed_type": "Atom"
   },
   {
     "name": "Reclaim Protocol",
@@ -171,12 +171,12 @@
   {
     "name": "Sindri",
     "domain": "https://sindri.app/blog/rss.xml",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "StarkWare",
     "domain": "https://starkware.co/feed/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Succinct",
@@ -186,7 +186,7 @@
   {
     "name": "Supranational",
     "domain": "https://medium.com/feed/supranational",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "TACEO",
@@ -196,17 +196,17 @@
   {
     "name": "Taiko",
     "domain": "https://taiko.mirror.xyz/feed/atom",
-    "feedtype": "Atom"
+    "feed_type": "Atom"
   },
   {
     "name": "Union",
     "domain": "https://union.build/rss.xml",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Veridise",
     "domain": "https://medium.com/feed/@veridise",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Vitalik Buterin",
@@ -217,7 +217,7 @@
   {
     "name": "ZCash | Electric Coin Company",
     "domain": "https://electriccoin.co/feed/",
-    "feedtype": "RSS"
+    "feed_type": "RSS"
   },
   {
     "name": "Zellic",
