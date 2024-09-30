@@ -5,78 +5,19 @@
     "feed_type": "Eprint"
   },
   {
-    "name": "Gevulot",
-    "domain": "https://blog.gevulot.com/api/v1/posts/?limit=50",
-    "feed_type": "Substack"
+    "name": "Aleo",
+    "domain": "https://medium.com/feed/@aleohq",
+    "feedtype": "RSS"
   },
   {
-    "name": "Ingonyama",
-    "domain": "https://medium.com/feed/@ingonyama",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "Succinct",
-    "domain": "https://blog.succinct.xyz/rss/",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "Vitalik Buterin",
-    "domain": "https://vitalik.eth.limo/feed.xml",
-    "feed_type": "RSS",
-    "custom_url_replace": "vitalik.ca>vitalik.eth.limo"
-  },
-  {
-    "name": "Zellic",
-    "domain": "https://www.zellic.io/blog/rss.xml",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "ZK Hack",
-    "domain": "https://zkhack.dev/feed/",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "ZKsync",
-    "domain": "https://zksync.mirror.xyz/feed/atom",
-    "feed_type": "Atom"
-  },
-  {
-    "name": "Delphinus Labs",
-    "domain": "https://delphinuslab.com/feed/",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "Lambda Class",
-    "domain": "https://blog.lambdaclass.com/rss/",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "Aligned",
+    "name": "Aligned Layer",
     "domain": "https://mirror.xyz/0x7794D1c55568270A81D8Bf39e1bcE96BEaC10901/feed/atom",
     "feed_type": "Atom"
   },
   {
-    "name": "Hylé",
-    "domain": "https://blog.hyle.eu/feed/",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "TACEO",
-    "domain": "https://blog.taceo.io/rss.xml",
-    "feed_type": "RSS"
-  },
-  {
-    "name": "Polygon",
-    "domain": "https://polygon.technology/blog",
-    "feed_type": "CustomHTML",
-    "custom_selectors": {
-      "article_selector": ".blog-list_wrapper.w-dyn-list",
-      "article_item_selector": ".blog-list_item-wrapper",
-      "title_selector": ".blog-list_heading",
-      "url_selector": ".blog-list_item.w-inline-block",
-      "date_selector": ".text-size-tiny.text-style-label.text-style-allcaps.text-color-grey6",
-      "date_format": "%B %d, %Y"
-    }
+    "name": "Avail",
+    "domain": "https://blog.availproject.org/rss/",
+    "feedtype": "RSS"
   },
   {
     "name": "Aztec",
@@ -92,6 +33,129 @@
     }
   },
   {
+    "name": "Brevis",
+    "domain": "https://blog.brevis.network/feed/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Citrea",
+    "domain": "https://www.blog.citrea.xyz/rss/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Delphinus Labs",
+    "domain": "https://delphinuslab.com/feed/",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "EigenLayer",
+    "domain": "https://www.blog.eigenlayer.xyz/rss/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Espresso Systems",
+    "domain": "https://medium.com/feed/@espressosys",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Ethereum Foundation",
+    "domain": "https://blog.ethereum.org/en/feed.xml",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Fhenix",
+    "domain": "https://www.fhenix.io/feed/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Filecoin",
+    "domain": "https://filecoin.io/blog/index.xml",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Gevulot",
+    "domain": "https://blog.gevulot.com/api/v1/posts/?limit=50",
+    "feed_type": "Substack"
+  },
+  {
+    "name": "Holonym",
+    "domain": "https://medium.com/feed/holonym",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Hylé",
+    "domain": "https://blog.hyle.eu/feed/",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "Ingonyama",
+    "domain": "https://medium.com/feed/@ingonyama",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "Kakarot",
+    "domain": "https://blog.kakarot.org/feed",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Lagrange",
+    "domain": "https://medium.com/feed/@lagrangelabs",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Lambda Class",
+    "domain": "https://blog.lambdaclass.com/rss/",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "Mina",
+    "domain": "https://minaprotocol.com/feed/atom",
+    "feedtype": "Atom"
+  },
+  {
+    "name": "Nebra",
+    "domain": "https://blog.nebra.one/rss/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Ola",
+    "domain": "https://medium.com/feed/@ola_zkzkvm",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Ora (HyperOracle)",
+    "domain": "https://mirror.xyz/orablog.eth/feed/atom",
+    "feedtype": "Atom"
+  },
+  {
+    "name": "Orbiter",
+    "domain": "https://medium.com/feed/@orbiter-finance",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Polygon",
+    "domain": "https://polygon.technology/blog",
+    "feed_type": "CustomHTML",
+    "custom_selectors": {
+      "article_selector": ".blog-list_wrapper.w-dyn-list",
+      "article_item_selector": ".blog-list_item-wrapper",
+      "title_selector": ".blog-list_heading",
+      "url_selector": ".blog-list_item.w-inline-block",
+      "date_selector": ".text-size-tiny.text-style-label.text-style-allcaps.text-color-grey6",
+      "date_format": "%B %d, %Y"
+    }
+  },
+  {
+    "name": "Privacy and Scaling Explorations (PSE)",
+    "domain": "https://mirror.xyz/privacy-scaling-explorations.eth/feed/atom",
+    "feedtype": "Atom"
+  },
+  {
+    "name": "Rarimo",
+    "domain": "https://mirror.xyz/0x90699B5A52BccbdFe73d5c9F3d039a33fb2D1AF6/feed/atom",
+    "feedtype": "Atom"
+  },
+  {
     "name": "Reclaim Protocol",
     "domain": "https://reclaimprotocol.org/blog/posts",
     "feed_type": "CustomHTML",
@@ -103,5 +167,71 @@
       "date_selector": "time",  
       "date_format": "%B %d, %Y"
     }
+  },
+  {
+    "name": "Sindri",
+    "domain": "https://sindri.app/blog/rss.xml",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "StarkWare",
+    "domain": "https://starkware.co/feed/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Succinct",
+    "domain": "https://blog.succinct.xyz/rss/",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "Supranational",
+    "domain": "https://medium.com/feed/supranational",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "TACEO",
+    "domain": "https://blog.taceo.io/rss.xml",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "Taiko",
+    "domain": "https://taiko.mirror.xyz/feed/atom",
+    "feedtype": "Atom"
+  },
+  {
+    "name": "Union",
+    "domain": "https://union.build/rss.xml",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Veridise",
+    "domain": "https://medium.com/feed/@veridise",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Vitalik Buterin",
+    "domain": "https://vitalik.eth.limo/feed.xml",
+    "feed_type": "RSS",
+    "custom_url_replace": "vitalik.ca>vitalik.eth.limo"
+  },
+  {
+    "name": "ZCash | Electric Coin Company",
+    "domain": "https://electriccoin.co/feed/",
+    "feedtype": "RSS"
+  },
+  {
+    "name": "Zellic",
+    "domain": "https://www.zellic.io/blog/rss.xml",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "ZK Hack",
+    "domain": "https://zkhack.dev/feed/",
+    "feed_type": "RSS"
+  },
+  {
+    "name": "ZKsync",
+    "domain": "https://zksync.mirror.xyz/feed/atom",
+    "feed_type": "Atom"
   }
 ]
