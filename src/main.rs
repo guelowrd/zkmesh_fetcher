@@ -119,12 +119,14 @@ async fn generate_html_output(
 
     // Add fetching information
     html_output.push_str(&format!("<h2>Fetching Info</h2>"));
-    html_output.push_str(&format!("<p>Date threshold: {}</p>", since_date));
+    html_output.push_str(&format!("<h3>Date Threshold:</h3>"));
+    html_output.push_str(&format!("<p>{}</p>", since_date));
+    html_output.push_str(&format!("<h3>Generation Date/Time:</h3>"));
     let run_date = chrono::Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
-    html_output.push_str(&format!("<p>Generation date/time: {}</p>", run_date));
+    html_output.push_str(&format!("<p>{}</p>", run_date));
 
     // Add list of blogs
-    html_output.push_str("<h3>List of Blogs:</h3><ul>");
+    html_output.push_str("<h3>List of Sources:</h3><ul>");
     for blog in blogs { 
         html_output.push_str(&format!("<li><a href=\"{}\">{}</a></li>", blog.domain, blog.name));
     }
