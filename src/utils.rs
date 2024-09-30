@@ -74,7 +74,12 @@ pub fn parse_args() -> Result<(String, NaiveDate), AppError> {
         NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
     } else {
         let today = chrono::Local::now();
-        NaiveDate::from_ymd_opt(today.year(), today.month(), 1).expect("Invalid date provided")
+        // Check if today is the 1st day of the month
+        if today.day() == 1 {
+            NaiveDate::from_ymd_opt(today.year(), today.month() - 1, 1).expect("Invalid date provided")
+        } else {
+            NaiveDate::from_ymd_opt(today.year(), today.month(), 1).expect("Invalid date provided")
+        }
     };
 
     Ok((blogs_file, since_date))
