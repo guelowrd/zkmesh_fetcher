@@ -5,6 +5,11 @@
     "feed_type": "Eprint"
   },
   {
+    "name": "1kx",
+    "domain": "https://medium.com/feed/1kxnetwork",
+    "feed_type": "RSS"
+  },
+  {
     "name": "Aleo",
     "domain": "https://medium.com/feed/@aleohq",
     "feed_type": "RSS"
