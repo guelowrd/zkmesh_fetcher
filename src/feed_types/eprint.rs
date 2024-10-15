@@ -58,7 +58,7 @@ fn should_include_record(record: &Record) -> bool {
 
     // Check if any of the authors match
     let authors_match = record.creators.iter().any(|author| {
-        config.authors.iter().any(|name| author.to_lowercase() == name.as_str())
+        config.authors.iter().any(|name| author.to_lowercase() == name.as_str().to_lowercase())
     });
 
     description_contains_keyword || title_contains_keyword || subject_contains_keyword || authors_match
