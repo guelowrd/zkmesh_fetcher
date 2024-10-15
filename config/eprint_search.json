@@ -1,4 +1,4 @@
 {
     "keywords": ["zero-knowledge", "zero knowledge", "zk", "snark", "stark", "ivc"],
-    "authors": ["dan boneh", "alessandro chiesa"]
+    "authors": ["Dan Boneh", "Alessandro Chiesa", "Eylon Yogev", "Giacomo Fenzi", "Gal Arnon", "Eli Ben-Sasson", "Benedikt Bünz", "Justin Drake", "Ben Fisch", "Ariel Gabizon", "Zachary J. Williamson", "Oana Ciobotaru", "Ulrich Haböck", "Benjamin E. Diamond", "Jim Posen", "Binyi Chen", "Alex Evans", "Guillermo Angeris", "Abhiram Kothapalli", "Srinath Setty", "Ioanna Tzialla", "Justin Thaler", "Mary Maller", "Pratyush Mishra", "Matthew Green", "Ian Miers", "Omer Shlomovits"]
   }
