@@ -43,6 +43,11 @@ impl EprintFetcher {
 fn should_include_record(record: &Record) -> bool {
     let config = load_eprint_config().expect("Failed to load eprint config");
 
+    // Check if the record's identifier matches any of the excluded URLs
+    if config.exclude.iter().any(|ex| record.identifier.ends_with(ex)) {
+        return false; // Exclude this record
+    }
+
     // Check if the description, title, or subject contains any of the keywords
     let description_contains_keyword = config.keywords.iter().any(|keyword| {
         record.description.to_lowercase().contains(keyword)

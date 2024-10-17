@@ -34,4 +34,5 @@ pub struct BlogArticle {
 pub struct EprintConfig {
     pub keywords: Vec<String>,
     pub authors: Vec<String>,
+    pub exclude: Vec<String>,
 }
