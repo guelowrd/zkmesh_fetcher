@@ -157,6 +157,11 @@
     "feed_type": "Atom"
   },
   {
+    "name": "Psycho Virtual",
+    "domain": "https://psychovirtual.io/rss.xml",
+    "feed_type": "RSS"
+  },
+  {
     "name": "Rarimo",
     "domain": "https://mirror.xyz/0x90699B5A52BccbdFe73d5c9F3d039a33fb2D1AF6/feed/atom",
     "feed_type": "Atom"
