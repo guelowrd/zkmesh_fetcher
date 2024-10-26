@@ -114,6 +114,11 @@
     "feed_type": "RSS"
   },
   {
+    "name": "Lauri Peltonen",
+    "domain": "https://medium.com/feed/@laurippeltonen",
+    "feed_type": "RSS"
+  },
+  {
     "name": "Mina",
     "domain": "https://minaprotocol.com/feed/atom",
     "feed_type": "Atom"
