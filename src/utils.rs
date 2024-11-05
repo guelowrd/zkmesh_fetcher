@@ -76,9 +76,9 @@ pub fn parse_args() -> Result<(String, NaiveDate), AppError> {
         let today = chrono::Local::now();
         // Check if today is the 1st day of the month
         if today.day() == 1 {
-            NaiveDate::from_ymd_opt(today.year(), today.month() - 1, 1).expect("Invalid date provided")
+            NaiveDate::from_ymd_opt(today.year(), today.month() - 1, 0).expect("Invalid date provided")
         } else {
-            NaiveDate::from_ymd_opt(today.year(), today.month(), 1).expect("Invalid date provided")
+            NaiveDate::from_ymd_opt(today.year(), today.month(), 0).expect("Invalid date provided")
         }
     };
 
