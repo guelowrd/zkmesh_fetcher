@@ -74,12 +74,13 @@ pub fn parse_args() -> Result<(String, NaiveDate), AppError> {
         NaiveDate::parse_from_str(&args[2], "%Y-%m-%d")?
     } else {
         let today = chrono::Local::now();
-        // Check if today is the 1st day of the month
-        if today.day() == 1 {
-            NaiveDate::from_ymd_opt(today.year(), today.month() - 1, 1).expect("Invalid date provided")
-        } else {
-            NaiveDate::from_ymd_opt(today.year(), today.month(), 1).expect("Invalid date provided")
-        }
+        // Calculate the last day of the previous month by subtracting one day from the first day of the current month
+        let last_day_of_prev_month = NaiveDate::from_ymd_opt(today.year(), today.month(), 1)
+            .expect("Failed to get the first day of the current month")
+            .pred_opt() // Use pred_opt to get the last day of the previous month
+            .expect("Failed to get the last day of the previous month"); 
+
+        last_day_of_prev_month
     };
 
     Ok((blogs_file, since_date))
