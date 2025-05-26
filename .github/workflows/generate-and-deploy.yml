@@ -2,7 +2,7 @@ name: Generate and Deploy HTML
 
 on:
   schedule:
-    - cron: '0 3 * * 1-6'  # Runs at 3:00 AM UTC on weekdays and Saturdays
+    - cron: '0 3 * * 1-5'  # Runs at 3:00 AM UTC on weekdays and Saturdays
   workflow_dispatch:  # Allows manual triggering
   push:
     branches: [ main ]  # Trigger on pushes to main branch
