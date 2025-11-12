@@ -1,5 +1,7 @@
 # zkMesh Fetcher
 
+*deployed daily on https://guelowrd.github.io/zkmesh_fetcher/*
+
 zkMesh monthly newsletter sharing the latest in decentralised privacy-preserving technologies, privacy protocol development and zero-knowledge systems – you can check it out and subscribe [here](https://zkmesh.substack.com/).
 
 zkMesh Fetcher is a Rust-based tool designed to fetch and aggregate blog articles from various sources, including (for now) Substack pages, RSS and Atom feeds, custom HTML pages, and ePrint.
