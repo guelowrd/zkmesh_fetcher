@@ -206,7 +206,7 @@
   },
   {
     "name": "TACEO",
-    "domain": "https://blog.taceo.io/rss.xml",
+    "domain": "https://core.taceo.io/rss.xml",
     "feed_type": "RSS"
   },
   {
